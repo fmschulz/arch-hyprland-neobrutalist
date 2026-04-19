@@ -2,7 +2,7 @@
 
 `v0.1.0` public baseline for a reproducible Arch Linux Hyprland setup with a neo-brutalist visual system.
 
-This repo is structured like other public Hyprland dotfile projects: tracked configs, package manifests, install/apply scripts, screenshots space, and a small docs layer that explains the design choices instead of leaving them implicit.
+This repo contains all Hyprland dotfile necessary to set up Neobrutlist Hyprland: tracked configs, package manifests, install/apply scripts, screenshots space, and a small docs layer that explains the design choices instead of leaving them implicit.
 
 ![arch-hyprland-neobrutalist v0.1.0 desktop showcase](assets/screenshots/v0.1.0-desktop.png)
 
