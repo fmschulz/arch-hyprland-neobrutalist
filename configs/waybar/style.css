@@ -1,0 +1,204 @@
+/* Neo-Brutalist Waybar Style */
+* {
+    font-family: "JetBrains Mono Nerd Font", monospace;
+    font-size: 17px;
+    font-weight: bold;
+}
+
+window#waybar {
+    background: #FFBE0B;  /* Bright yellow */
+    color: #000000;
+    border-bottom: 4px solid #000000;
+}
+
+/* Workspaces */
+#workspaces {
+    background: #FFBE0B;
+    margin: 6px;
+    padding: 0;
+}
+
+#workspaces button {
+    background: #FB5607;  /* Orange */
+    color: #000000;
+    border: 3px solid #000000;
+    border-radius: 0;
+    padding: 0 12px;
+    margin: 5px;
+    box-shadow: 4px 4px 0px #000000;
+    transition: all 0.1s ease;
+}
+
+#workspaces button:hover {
+    background: #FF006E;  /* Hot pink */
+    box-shadow: 6px 6px 0px #000000;
+    margin-bottom: 2px;
+    margin-right: 2px;
+}
+
+#workspaces button.active {
+    background: #8338EC;  /* Purple */
+    color: #FFFFFF;
+    box-shadow: 2px 2px 0px #000000;
+}
+
+#workspaces button.urgent {
+    background: #FF006E;
+    animation: blink 0.5s linear infinite alternate;
+}
+
+/* Modules - Base Style */
+#clock,
+#battery,
+#network,
+#pulseaudio,
+#backlight,
+#bluetooth,
+#idle_inhibitor,
+#custom-updates,
+#custom-system-stats,
+#custom-workspace-overview,
+#tray,
+#custom-power {
+    background: #FB5607;  /* Orange */
+    color: #000000;
+    border: 3px solid #000000;
+    margin: 5px;
+    padding: 0 16px;
+    box-shadow: 4px 4px 0px #000000;
+}
+
+/* Combined system stats module */
+#custom-system-stats {
+    background: #FB5607;  /* Orange */
+    color: #000000;
+}
+
+#custom-system-stats.warning {
+    background: #FFB700;  /* Amber */
+    color: #000000;
+}
+
+#custom-system-stats.critical {
+    background: #FF006E;  /* Hot pink */
+    color: #FFFFFF;
+    animation: blink 0.5s linear infinite alternate;
+}
+
+/* Workspace overview button */
+#custom-workspace-overview {
+    background: #06FFA5;  /* Turquoise/Mint */
+    color: #000000;
+    padding: 0 12px;
+}
+
+#clock {
+    background: #06FFA5;  /* Mint green */
+    color: #000000;
+}
+
+#battery {
+    background: #FFB700;  /* Amber */
+    color: #000000;
+}
+
+#battery.charging {
+    background: #06FFA5;
+}
+
+#battery.critical:not(.charging) {
+    background: #FF006E;
+    color: #FFFFFF;
+    animation: blink 0.5s linear infinite alternate;
+}
+
+#network {
+    background: #FB5607;
+    color: #000000;
+}
+
+#network.disconnected {
+    background: #FF006E;
+    color: #FFFFFF;
+}
+
+#pulseaudio {
+    background: #8338EC;
+    color: #FFFFFF;
+}
+
+#pulseaudio.muted {
+    background: #000000;
+    color: #FFFFFF;
+}
+
+/* Backlight */
+#backlight {
+    background: #FFB700;  /* Amber - like sunshine */
+    color: #000000;
+}
+
+/* Bluetooth */
+#bluetooth {
+    background: #3A86FF;  /* Blue */
+    color: #FFFFFF;
+}
+
+#bluetooth.connected {
+    background: #06FFA5;  /* Mint green */
+    color: #000000;
+}
+
+#bluetooth.disabled,
+#bluetooth.off {
+    background: #666666;
+    color: #FFFFFF;
+}
+
+/* Idle Inhibitor */
+#idle_inhibitor {
+    background: #666666;
+    color: #FFFFFF;
+}
+
+#idle_inhibitor.activated {
+    background: #06FFA5;  /* Mint green - active/awake */
+    color: #000000;
+}
+
+/* Updates */
+#custom-updates {
+    background: #8338EC;  /* Purple */
+    color: #FFFFFF;
+}
+
+#tray {
+    background: #FFBE0B;
+    box-shadow: none;
+    border: none;
+}
+
+#tray > .passive {
+    -gtk-icon-effect: dim;
+}
+
+#tray > .needs-attention {
+    -gtk-icon-effect: highlight;
+}
+
+/* Animations */
+@keyframes blink {
+    to {
+        background-color: #FFFFFF;
+        color: #000000;
+    }
+}
+
+/* Tooltip */
+tooltip {
+    background: #000000;
+    color: #FFFFFF;
+    border: 3px solid #FF006E;
+    border-radius: 0;
+    box-shadow: 6px 6px 0px #FF006E;
+}

@@ -1,0 +1,6 @@
+*.swp
+*.swo
+*~
+.DS_Store
+configs/arch-hypr-neobrutalist/bluetooth-devices.conf
+configs/hypr/workspace-names.json

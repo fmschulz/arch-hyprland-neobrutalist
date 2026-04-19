@@ -1,0 +1,11 @@
+# Local, machine-specific additions for arch-hypr-neobrutalist.
+# This file is sourced from ~/.bashrc.local if present.
+
+# Private SSH shortcuts
+# alias lab="ssh you@example.org"
+
+# Extra PATH entries
+# export PATH="$HOME/.local/custom/bin:$PATH"
+
+# Machine-only environment variables
+# export DOTFILES_MONITOR_SCALE="1.25"

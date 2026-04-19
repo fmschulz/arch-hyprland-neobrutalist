@@ -1,0 +1,137 @@
+"$schema" = "https://yazi-rs.github.io/schemas/theme.json"
+
+[flavor]
+dark = "dracula"
+
+[app]
+overall = { bg = "#000000" }
+
+[mgr]
+cwd = { fg = "#FFFFFF", bg = "#4D4D4D", bold = true }
+find_keyword = { fg = "#000000", bg = "#06FFA5", bold = true }
+find_position = { fg = "#FFFFFF", bg = "#FF006E", bold = true }
+symlink_target = { fg = "#B14AFF", italic = true }
+marker_copied = { fg = "#000000", bg = "#FFB700", bold = true }
+marker_cut = { fg = "#FFFFFF", bg = "#FF006E", bold = true }
+marker_marked = { fg = "#000000", bg = "#3185FC", bold = true }
+marker_selected = { fg = "#000000", bg = "#06FFA5", bold = true }
+count_copied = { fg = "#000000", bg = "#FFB700", bold = true }
+count_cut = { fg = "#FFFFFF", bg = "#FF006E", bold = true }
+count_selected = { fg = "#000000", bg = "#06FFA5", bold = true }
+border_symbol = "│"
+border_style = { fg = "#FFFFFF" }
+
+[tabs]
+active = { fg = "#FFFFFF", bg = "#FF006E", bold = true }
+inactive = { fg = "#FFFFFF", bg = "#4D4D4D" }
+sep_inner = { open = "", close = "" }
+sep_outer = { open = "", close = "" }
+
+[mode]
+normal_main = { fg = "#FFFFFF", bg = "#4D4D4D", bold = true }
+normal_alt = { fg = "#FFFFFF", bg = "#2D2D2D" }
+select_main = { fg = "#FFFFFF", bg = "#FF006E", bold = true }
+select_alt = { fg = "#FFFFFF", bg = "#2D2D2D" }
+unset_main = { fg = "#FFFFFF", bg = "#3185FC", bold = true }
+unset_alt = { fg = "#FFFFFF", bg = "#2D2D2D" }
+
+[indicator]
+parent = { fg = "#000000", bg = "#FFB700", bold = true }
+current = { fg = "#000000", bg = "#06FFA5", bold = true }
+preview = { fg = "#000000", bg = "#3185FC", bold = true }
+padding = { open = "▐", close = "▌" }
+
+[status]
+overall = { bg = "#000000" }
+sep_left = { open = "", close = "" }
+sep_right = { open = "", close = "" }
+perm_sep = { fg = "#4D4D4D" }
+perm_type = { fg = "#06FFA5" }
+perm_read = { fg = "#FFB700" }
+perm_write = { fg = "#FF006E" }
+perm_exec = { fg = "#3185FC" }
+progress_label = { bold = true }
+progress_normal = { fg = "#06FFA5", bg = "#2D2D2D" }
+progress_error = { fg = "#FF006E", bg = "#2D2D2D" }
+
+[which]
+cols = 3
+mask = { bg = "#000000" }
+cand = { fg = "#06FFA5", bold = true }
+rest = { fg = "#B14AFF" }
+desc = { fg = "#FF006E" }
+separator = " • "
+separator_style = { fg = "#4D4D4D" }
+
+[confirm]
+border = { fg = "#3185FC" }
+title = { fg = "#3185FC", bold = true }
+body = { fg = "#FFFFFF" }
+list = { fg = "#FFFFFF" }
+btn_yes = { fg = "#000000", bg = "#06FFA5", bold = true }
+btn_no = { fg = "#FFFFFF", bg = "#4D4D4D" }
+
+[pick]
+border = { fg = "#FF006E" }
+active = { fg = "#FF006E", bold = true }
+inactive = { fg = "#FFFFFF" }
+
+[input]
+border = { fg = "#FF006E" }
+title = { fg = "#FF006E", bold = true }
+value = { fg = "#FFFFFF" }
+selected = { fg = "#000000", bg = "#06FFA5", bold = true }
+
+[cmp]
+border = { fg = "#3185FC" }
+active = { fg = "#000000", bg = "#06FFA5", bold = true }
+inactive = { fg = "#FFFFFF" }
+icon_file = ""
+icon_folder = ""
+icon_command = ""
+
+[tasks]
+border = { fg = "#3185FC" }
+title = { fg = "#3185FC", bold = true }
+hovered = { fg = "#FF006E", bold = true }
+
+[help]
+on = { fg = "#06FFA5" }
+run = { fg = "#3185FC" }
+desc = { fg = "#FFFFFF" }
+hovered = { fg = "#000000", bg = "#FFB700", bold = true }
+footer = { fg = "#000000", bg = "#FFBE0B" }
+
+[filetype]
+rules = [
+  { mime = "image/*", fg = "#06FFA5" },
+  { mime = "video/*", fg = "#B14AFF" },
+  { mime = "audio/*", fg = "#FFB700" },
+  { url = "*.{zip,tar,gz,xz,bz2,7z,rar}", fg = "#FF006E" },
+  { url = "*.{pdf,doc,docx,odt,ods,odp,ppt,pptx,xls,xlsx}", fg = "#3185FC" },
+  { url = "*", is = "orphan", fg = "#FFFFFF", bg = "#FF006E" },
+  { url = "*", is = "exec", fg = "#06FFA5", bold = true },
+  { url = "*/", fg = "#3185FC", bold = true },
+]
+
+[icon]
+prepend_dirs = [
+  { name = ".config", text = "", fg = "#FFB700" },
+  { name = "configs", text = "", fg = "#06FFA5" },
+  { name = "docs", text = "󰂺", fg = "#3185FC" },
+  { name = "packages", text = "", fg = "#FFB700" },
+  { name = "scripts", text = "󱆃", fg = "#FF006E" },
+]
+prepend_files = [
+  { name = "AGENTS.md", text = "󱂛", fg = "#FF006E" },
+  { name = "README.md", text = "󰍔", fg = "#3185FC" },
+  { name = "package.toml", text = "", fg = "#FFB700" },
+  { name = "yazi.toml", text = "", fg = "#06FFA5" },
+]
+append_exts = [
+  { name = "toml", text = "", fg = "#FFB700" },
+  { name = "md", text = "", fg = "#3185FC" },
+  { name = "lua", text = "", fg = "#B14AFF" },
+  { name = "nix", text = "", fg = "#06FFA5" },
+  { name = "sh", text = "", fg = "#FFFFFF" },
+]

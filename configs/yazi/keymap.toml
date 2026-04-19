@@ -1,0 +1,46 @@
+"$schema" = "https://yazi-rs.github.io/schemas/keymap.json"
+
+[[mgr.prepend_keymap]]
+on = "l"
+run = "plugin smart-enter"
+desc = "Enter the child directory, or open the file"
+
+[[mgr.prepend_keymap]]
+on = "<Enter>"
+run = "plugin smart-enter"
+desc = "Enter the child directory, or open the file"
+
+[[mgr.prepend_keymap]]
+on = "!"
+run = 'shell "$SHELL" --block'
+desc = "Open a shell here"
+
+[[mgr.prepend_keymap]]
+on = "T"
+run = "plugin toggle-pane max-preview"
+desc = "Maximize or restore the preview pane"
+
+[[mgr.prepend_keymap]]
+on = "F"
+run = "plugin smart-filter"
+desc = "Smart filter"
+
+[[mgr.prepend_keymap]]
+on = [",", "f"]
+run = "plugin jump-to-char"
+desc = "Jump to a file by first character"
+
+[[mgr.prepend_keymap]]
+on = ">"
+run = "plugin zoom 1"
+desc = "Zoom in the hovered image preview"
+
+[[mgr.prepend_keymap]]
+on = "<"
+run = "plugin zoom -1"
+desc = "Zoom out the hovered image preview"
+
+[[input.prepend_keymap]]
+on = "<Esc>"
+run = "close"
+desc = "Cancel input immediately"

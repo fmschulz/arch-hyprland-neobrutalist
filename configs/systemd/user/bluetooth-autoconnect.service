@@ -1,0 +1,11 @@
+[Unit]
+Description=Maintain trusted Bluetooth device connections
+
+[Service]
+Type=simple
+ExecStart=%h/.config/scripts/bluetooth-autoconnect.sh --watch
+Restart=always
+RestartSec=15
+
+[Install]
+WantedBy=default.target

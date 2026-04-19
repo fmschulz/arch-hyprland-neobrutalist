@@ -1,0 +1,190 @@
+{
+    "layer": "top",
+    "position": "top",
+    "height": 42,
+    "spacing": 4,
+
+    "modules-left": ["hyprland/workspaces", "hyprland/window"],
+    "modules-center": ["clock"],
+    "modules-right": ["idle_inhibitor", "custom/updates", "custom/system-stats", "backlight", "pulseaudio", "custom/usb", "bluetooth", "battery", "tray", "custom/workspace-overview", "custom/power"],
+
+    "hyprland/workspaces": {
+        "disable-scroll": false,
+        "all-outputs": true,
+        "format": "{name}",
+        "sort-by": "number",
+        "format-icons": {
+            "1": "1️⃣",
+            "2": "2️⃣",
+            "3": "3️⃣",
+            "4": "4️⃣",
+            "5": "5️⃣",
+            "6": "6️⃣",
+            "7": "7️⃣",
+            "8": "8️⃣",
+            "9": "9️⃣",
+            "urgent": "❗",
+            "focused": "🔵",
+            "default": "⚪"
+        },
+        "on-scroll-up": "hyprctl dispatch workspace e-1",
+        "on-scroll-down": "hyprctl dispatch workspace e+1"
+    },
+
+    "hyprland/window": {
+        "format": "👉 {}",
+        "max-length": 50
+    },
+
+    "clock": {
+        "format": "🕐 {:%a %b %d  %I:%M %p}",
+        "format-alt": "📅 {:%Y-%m-%d}",
+        "tooltip-format": "<tt><big>{:%B %Y}</big>\n<small>◀ scroll / click ▶</small>\n{calendar}</tt>",
+        "calendar": {
+            "mode": "month",
+            "mode-mon-col": 3,
+            "weeks-pos": "right",
+            "on-scroll": 1,
+            "on-click-right": "mode",
+            "format": {
+                "months": "<span color='#FFBE0B'><b>{}</b></span>",
+                "days": "<span color='#FFFFFF'>{}</span>",
+                "weeks": "<span color='#06FFA5'><b>W{}</b></span>",
+                "weekdays": "<span color='#FB5607'><b>{}</b></span>",
+                "today": "<span color='#FF006E'><b><u>{}</u></b></span>"
+            }
+        },
+        "actions": {
+            "on-click-right": "mode",
+            "on-click-forward": "shift_up",
+            "on-click-backward": "shift_down",
+            "on-scroll-up": "shift_up",
+            "on-scroll-down": "shift_down"
+        }
+    },
+
+    "custom/system-stats": {
+        "exec": "~/.config/scripts/system-stats-waybar.sh",
+        "return-type": "json",
+        "interval": 3,
+        "tooltip": true,
+        "on-click": "kitty -e btm",
+        "on-click-right": "kitty -e ncdu /home"
+    },
+
+    "network": {
+        "interface-type": "wireless",
+        "interval": 5,
+        "format-wifi": "📶 {essid} ({signalStrength}%)",
+        "format-ethernet": "🔌 {ifname}",
+        "format-disconnected": "📡",
+        "tooltip-format-wifi": "{essid}\nSignal: {signalStrength}%\nIP: {ipaddr}",
+        "tooltip-format-ethernet": "{ifname}\nIP: {ipaddr}",
+        "tooltip-format-disconnected": "Wi-Fi disconnected",
+        "on-click": "~/.config/scripts/wifi-menu.sh"
+    },
+
+    "battery": {
+        "bat": "BAT1",
+        "adapter": "ACAD",
+        "states": {
+            "warning": 30,
+            "critical": 15
+        },
+        "format": "{icon} {capacity}%",
+        "format-charging": "⚡ {capacity}%",
+        "format-plugged": "🔌 {capacity}%",
+        "format-alt": "{icon} {time}",
+        "format-icons": {
+            "default": ["💀", "🪫", "🔋", "🔋", "🔋"],
+            "charging": ["⚡"],
+            "plugged": ["🔌"],
+            "warning": ["⚠️"],
+            "critical": ["💀"]
+        }
+    },
+
+    "idle_inhibitor": {
+        "format": "{icon}",
+        "format-icons": {
+            "activated": "☕",
+            "deactivated": "😴"
+        },
+        "tooltip-format-activated": "Idle inhibitor: ON (won't sleep)",
+        "tooltip-format-deactivated": "Idle inhibitor: OFF"
+    },
+
+    "custom/updates": {
+        "format": "📦 {}",
+        "interval": 3600,
+        "exec": "checkupdates 2>/dev/null | wc -l || echo 0",
+        "exec-if": "exit 0",
+        "on-click": "kitty -e bash -c 'sudo pacman -Syu; echo; echo Press any key to close...; read -n1'",
+        "tooltip": "Click to update system"
+    },
+
+    "backlight": {
+        "format": "{icon} {percent}%",
+        "format-icons": ["🌑", "🌒", "🌓", "🌔", "🌕"],
+        "on-scroll-up": "brightnessctl set +5%",
+        "on-scroll-down": "brightnessctl set 5%-",
+        "tooltip-format": "Brightness: {percent}%"
+    },
+
+    "bluetooth": {
+        "format": "󰂯",
+        "format-connected": "󰂱",
+        "format-connected-battery": "󰂱",
+        "format-disabled": "󰂲",
+        "format-off": "󰂲",
+        "tooltip-format": "{controller_alias}\t{controller_address}",
+        "tooltip-format-connected": "{controller_alias}\t{controller_address}\n\n{device_enumerate}",
+        "tooltip-format-enumerate-connected": "{device_alias}\t{device_address}",
+        "on-click": "blueman-manager"
+    },
+
+    "pulseaudio": {
+        "format": "{icon} {volume}%",
+        "format-bluetooth": "{icon}🎧 {volume}%",
+        "format-bluetooth-muted": "🔇🎧",
+        "format-muted": "🔇",
+        "format-icons": {
+            "headphone": "🎧",
+            "hands-free": "🎧",
+            "headset": "🎧",
+            "phone": "📱",
+            "portable": "📱",
+            "car": "🚗",
+            "default": ["🔈", "🔉", "🔊"]
+        },
+        "on-click": "pavucontrol"
+    },
+
+    "tray": {
+        "icon-size": 18,
+        "spacing": 10
+    },
+
+    "custom/workspace-overview": {
+        "exec": "~/.config/scripts/workspace-rename.sh waybar",
+        "return-type": "json",
+        "interval": 5,
+        "tooltip": true,
+        "on-click": "~/.config/scripts/workspace-rename.sh overview",
+        "signal": 8
+    },
+
+    "custom/power": {
+        "format": "⏻",
+        "tooltip": "Sleep / Reboot / Shutdown",
+        "on-click": "~/.config/scripts/power-menu.sh"
+    },
+    "custom/usb": {
+        "format": "{}",
+        "exec": "~/.config/scripts/usb-monitor.sh",
+        "return-type": "json",
+        "interval": 5,
+        "on-click": "~/.config/scripts/usb-menu.sh",
+        "tooltip": true
+    }
+}

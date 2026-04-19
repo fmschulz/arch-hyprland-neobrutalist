@@ -1,0 +1,4 @@
+# Copy-once local monitor profile.
+# Edit ~/.config/hypr/monitors.conf on each machine instead of the tracked hyprland.conf.
+
+monitor = ,preferred,auto,1.0

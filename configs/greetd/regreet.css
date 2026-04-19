@@ -1,0 +1,101 @@
+/* Neo-brutalist styling for regreet */
+* {
+  font-family: "JetBrains Mono", "JetBrainsMono Nerd Font", monospace;
+  font-weight: 600;
+}
+
+window {
+  background-color: #FFBE0B;
+  color: #000;
+}
+
+#root {
+  padding: 48px;
+}
+
+#login-area {
+  background-color: #FFBE0B;
+  border: 4px solid #000;
+  box-shadow: 12px 12px 0px #000;
+  padding: 48px;
+}
+
+label {
+  color: #000;
+  font-size: 16px;
+}
+
+#hostname,
+#clock {
+  font-size: 18px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+entry {
+  background-color: #fff;
+  color: #000;
+  border: 4px solid #000;
+  border-radius: 0;
+  padding: 10px 14px;
+  font-size: 16px;
+}
+
+entry:focus {
+  border-color: #8338EC;
+  box-shadow: inset 6px 6px 0px rgba(0,0,0,0.15);
+}
+
+button {
+  background-color: #FF006E;
+  color: #fff;
+  border: 4px solid #000;
+  border-radius: 0;
+  padding: 10px 20px;
+  font-size: 16px;
+  text-transform: uppercase;
+  transition: all 0.15s ease;
+  box-shadow: 6px 6px 0px #000;
+}
+
+button:hover,
+button:focus {
+  background-color: #8338EC;
+  color: #fff;
+  box-shadow: 8px 8px 0px #000;
+}
+
+button:active {
+  background-color: #06FFA5;
+  color: #000;
+  box-shadow: 4px 4px 0px #000;
+}
+
+#error-label {
+  color: #FF006E;
+  font-weight: 700;
+  margin-top: 12px;
+}
+
+#sessions,
+#actions {
+  margin-top: 20px;
+}
+
+list {
+  background-color: #FFBE0B;
+  border: 4px solid #000;
+  box-shadow: 8px 8px 0px #000;
+}
+
+list row {
+  background-color: transparent;
+  color: #000;
+  padding: 10px 16px;
+}
+
+list row:selected,
+list row:hover {
+  background-color: #06FFA5;
+  color: #000;
+}

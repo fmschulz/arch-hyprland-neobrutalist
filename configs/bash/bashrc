@@ -1,0 +1,549 @@
+# arch-hypr-neobrutalist - Bash Configuration
+
+# ============================================================================
+# EARLY EXIT FOR NON-INTERACTIVE SHELLS
+# ============================================================================
+[[ $- != *i* ]] && return
+
+# ============================================================================
+# SECURITY
+# ============================================================================
+umask 077  # Restrictive default permissions (only owner can read/write)
+
+# Load secrets from separate file (not in git!)
+[[ -f ~/.secrets ]] && source ~/.secrets
+
+# ============================================================================
+# XDG BASE DIRECTORIES (Freedesktop standard)
+# ============================================================================
+export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
+export XDG_CACHE_HOME="${XDG_CACHE_HOME:-$HOME/.cache}"
+export XDG_DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"
+export XDG_STATE_HOME="${XDG_STATE_HOME:-$HOME/.local/state}"
+export XDG_DATA_DIRS="/var/lib/flatpak/exports/share:$HOME/.local/share/flatpak/exports/share:${XDG_DATA_DIRS:-/usr/local/share:/usr/share}"
+
+# ============================================================================
+# SHELL OPTIONS
+# ============================================================================
+shopt -s histappend      # Append to history, don't overwrite
+shopt -s checkwinsize    # Update LINES/COLUMNS after each command
+shopt -s globstar        # ** matches all files and zero or more directories
+shopt -s cdspell         # Autocorrect minor cd typos
+shopt -s dirspell        # Autocorrect directory names during completion
+shopt -s autocd          # Type directory name to cd into it
+shopt -s expand_aliases  # Expand aliases in scripts
+shopt -s nocaseglob      # Case-insensitive globbing
+shopt -s extglob         # Extended pattern matching
+shopt -s dotglob         # Include dotfiles in pathname expansion
+
+# ============================================================================
+# HISTORY CONFIGURATION
+# ============================================================================
+export HISTSIZE=100000
+export HISTFILESIZE=200000
+export HISTCONTROL=ignoreboth:erasedups  # No duplicates, ignore leading space
+export HISTTIMEFORMAT="%F %T  "          # Timestamps in history
+export HISTIGNORE="ls:ll:la:cd:pwd:exit:clear:history:h"  # Ignore trivial commands
+
+# Save history after each command (survive crashes)
+PROMPT_COMMAND="${PROMPT_COMMAND:+$PROMPT_COMMAND$'\n'}history -a; history -c; history -r"
+
+# ============================================================================
+# ENVIRONMENT VARIABLES
+# ============================================================================
+export EDITOR="nvim"
+export VISUAL="nvim"
+export PAGER="less"
+export BROWSER="firefox"
+export TERMINAL="kitty"
+
+# Less configuration
+export LESS="-R -F -X -i -M -S"
+export LESSHISTFILE="$XDG_STATE_HOME/less/history"
+
+# Man pages with color
+export MANPAGER="less -R --use-color -Dd+r -Du+b"
+export MANROFFOPT="-c"
+
+# Wayland/Hyprland specific
+export MOZ_ENABLE_WAYLAND=1
+export QT_QPA_PLATFORM=wayland
+export QT_WAYLAND_DISABLE_WINDOWDECORATION=1
+export SDL_VIDEODRIVER=wayland
+export _JAVA_AWT_WM_NONREPARENTING=1
+export XDG_CURRENT_DESKTOP=Hyprland
+export XDG_SESSION_TYPE=wayland
+export XDG_SESSION_DESKTOP=Hyprland
+
+# GPG/SSH agent
+export GPG_TTY=$(tty)
+export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/ssh-agent.socket"
+
+# Node.js
+export NODE_OPTIONS="--max-old-space-size=4096"
+
+# Python
+export PYTHONDONTWRITEBYTECODE=1
+
+# Android SDK (optional)
+if [[ -d "/opt/android-sdk" ]]; then
+    export ANDROID_HOME="/opt/android-sdk"
+    export ANDROID_SDK_ROOT="/opt/android-sdk"
+fi
+
+# ============================================================================
+# PATH CONFIGURATION (deduplicated)
+# ============================================================================
+path_prepend() {
+    [[ -d "$1" ]] && [[ ":$PATH:" != *":$1:"* ]] && PATH="$1:$PATH"
+}
+
+path_prepend "$HOME/.local/bin"
+path_prepend "$HOME/bin"
+path_prepend "$HOME/.cargo/bin"
+path_prepend "$HOME/go/bin"
+path_prepend "$HOME/.npm-global/bin"
+path_prepend "$HOME/.pixi/bin"
+path_prepend "$HOME/.config/scripts"
+[[ -d "$ANDROID_HOME" ]] && path_prepend "$ANDROID_HOME/platform-tools"
+
+export PATH
+
+# NVM (Node Version Manager)
+export NVM_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/nvm"
+[[ -s "$NVM_DIR/nvm.sh" ]] && source "$NVM_DIR/nvm.sh"
+[[ -s "$NVM_DIR/bash_completion" ]] && source "$NVM_DIR/bash_completion"
+
+# ============================================================================
+# ALIASES - Navigation
+# ============================================================================
+alias ..='cd ..'
+alias ...='cd ../..'
+alias ....='cd ../../..'
+alias .....='cd ../../../..'
+alias reset=' systemctl --user restart xdg-desktop-portal xdg-desktop-portal-hyprland pipewire wireplumber'
+alias -- -='cd -'
+
+# ============================================================================
+# ALIASES - Listing (use modern tools if available)
+# ============================================================================
+if command -v eza &>/dev/null; then
+    alias ls='eza --icons --group-directories-first'
+    alias ll='eza -l --icons --group-directories-first --git'
+    alias la='eza -la --icons --group-directories-first --git'
+    alias lt='eza -T --icons --level=2'    # Tree view
+    alias lta='eza -Ta --icons --level=2'  # Tree view all
+    alias tree='eza --tree'
+else
+    alias ls='ls --color=auto --group-directories-first'
+    alias ll='ls -lh'
+    alias la='ls -lAh'
+fi
+
+alias l='ls -CF'
+
+# ============================================================================
+# ALIASES - Modern CLI Tools
+# ============================================================================
+# Use bat instead of cat
+if command -v bat &>/dev/null; then
+    alias cat='bat --paging=never'
+    alias catp='bat --plain'
+    export MANPAGER="sh -c 'col -bx | bat -l man -p'"
+fi
+
+# Use ripgrep with smart case
+command -v rg &>/dev/null && alias grep='rg -S'
+
+# Use fd instead of find
+command -v fd &>/dev/null && alias find='fd'
+
+# Use dust instead of du
+command -v dust &>/dev/null && alias du='dust'
+
+# Use duf instead of df
+command -v duf &>/dev/null && alias df='duf'
+
+# Use procs instead of ps
+command -v procs &>/dev/null && alias ps='procs'
+
+# Use bottom instead of top/htop
+command -v btm &>/dev/null && alias top='btm' && alias htop='btm'
+
+# Keep originals accessible
+alias gls='/usr/bin/ls'
+alias gcat='/usr/bin/cat'
+alias ggrep='/usr/bin/grep'
+alias gfind='/usr/bin/find'
+alias gman='/usr/bin/man'
+alias gsed='/usr/bin/sed'
+
+# Additional modern CLI tools (Rust/Go alternatives)
+# sd: simpler sed replacement
+command -v sd &>/dev/null && alias sed='sd'
+
+# ouch: universal archive tool
+if command -v ouch &>/dev/null; then
+    alias compress='ouch compress'
+    alias decompress='ouch decompress'
+fi
+
+# tealdeer: simplified man pages
+command -v tldr &>/dev/null && alias man='tldr'
+
+# xh: HTTPie alternative in Rust
+command -v xh &>/dev/null && alias http='xh'
+
+# just: modern command runner
+command -v just &>/dev/null && alias j='just'
+
+# hexyl: hex viewer
+command -v hexyl &>/dev/null && alias hex='hexyl'
+
+# grex: regex generator from examples
+# Usage: grex 'foo' 'foobar' 'foobaz' -> generates regex
+
+# ============================================================================
+# ALIASES - Git
+# ============================================================================
+alias g='git'
+alias gs='git status -sb'
+alias ga='git add'
+alias gaa='git add --all'
+alias gc='git commit'
+alias gcm='git commit -m'
+alias gca='git commit --amend'
+alias gco='git checkout'
+alias gcb='git checkout -b'
+alias gd='git diff'
+alias gds='git diff --staged'
+alias gl='git log --oneline --graph --decorate -20'
+alias gla='git log --oneline --graph --decorate --all'
+alias gp='git push'
+alias gpf='git push --force-with-lease'
+alias gpl='git pull --rebase'
+alias gb='git branch'
+alias gbd='git branch -d'
+alias gst='git stash'
+alias gstp='git stash pop'
+alias gf='git fetch --all --prune'
+
+# ============================================================================
+# ALIASES - Safety
+# ============================================================================
+alias rm='rm -I --preserve-root'
+alias mv='mv -i'
+alias cp='cp -i'
+alias ln='ln -i'
+alias chown='chown --preserve-root'
+alias chmod='chmod --preserve-root'
+alias chgrp='chgrp --preserve-root'
+
+# ============================================================================
+# ALIASES - System (Arch specific)
+# ============================================================================
+alias pac='sudo pacman'
+alias pacs='pacman -Ss'               # Search packages
+alias paci='sudo pacman -S'           # Install
+alias pacr='sudo pacman -Rns'         # Remove with deps
+alias pacu='sudo pacman -Syu'         # Full system upgrade
+alias pacq='pacman -Qi'               # Package info
+alias pacl='pacman -Ql'               # List package files
+alias paco='pacman -Qtdq'             # List orphans
+alias pacclean='sudo pacman -Rns $(pacman -Qtdq) 2>/dev/null || echo "No orphans"'
+
+# Yay/paru (AUR helpers)
+if command -v paru &>/dev/null; then
+    alias yay='paru'
+    alias ya='paru -Syu'
+elif command -v yay &>/dev/null; then
+    alias ya='yay -Syu'
+fi
+
+alias ss='sudo systemctl'
+alias sss='systemctl status'
+alias sse='sudo systemctl enable --now'
+alias ssd='sudo systemctl disable --now'
+alias ssr='sudo systemctl restart'
+alias jctl='journalctl -xeu'
+alias jctlf='journalctl -fu'
+
+# ============================================================================
+# ALIASES - Network & SSH
+# ============================================================================
+alias ip='ip -c'
+alias ports='ss -tulanp'
+alias myip='curl -s ifconfig.me'
+alias pingg='ping -c 5 google.com'
+
+# SSH wrapper for better terminal compatibility
+ssh() {
+    case "$TERM" in
+        xterm-kitty|kitty)
+            TERM=xterm-256color command ssh "$@"
+            ;;
+        *)
+            command ssh "$@"
+            ;;
+    esac
+}
+
+# ============================================================================
+# ALIASES - Utilities
+# ============================================================================
+alias h='history'
+alias hg='history | grep'
+alias py='python'
+alias ipy='ipython'
+alias pip='python -m pip'
+alias venv='python -m venv'
+alias ca='conda activate'
+alias ma='mamba activate'
+alias jl='jupyter lab'
+alias jn='jupyter notebook'
+
+# Pixi
+alias px="pixi"
+alias pxr="pixi run"
+alias pxs="pixi shell"
+alias pxa="pixi add"
+alias pxg="pixi global"
+
+alias mkdir='mkdir -pv'
+alias free='free -h'
+alias path='echo -e ${PATH//:/\\n}'
+alias now='date +"%Y-%m-%d %H:%M:%S"'
+alias week='date +%V'
+alias reload='source ~/.bashrc && echo "bashrc reloaded"'
+alias c='clear'
+alias q='exit'
+
+# Clipboard (Wayland)
+alias clip='wl-copy'
+alias paste='wl-paste'
+alias pbcopy='wl-copy'
+alias pbpaste='wl-paste'
+alias clipboard='cliphist list | wofi --dmenu | cliphist decode | wl-copy'
+alias clipclear='cliphist wipe'
+
+# Quick edit configs
+alias eb='$EDITOR ~/.config/bash/bashrc'
+alias eh='$EDITOR ~/.config/hypr/hyprland.conf'
+alias ek='$EDITOR ~/.config/kitty/kitty.conf'
+alias en='$EDITOR ~/.config/nvim/init.lua'
+
+# System maintenance
+alias health='~/.config/scripts/system-health.sh'
+alias cleanup='~/.config/scripts/cache-cleanup.sh'
+
+# FUNCTIONS
+# ============================================================================
+
+# Create directory and cd into it
+mkcd() {
+    mkdir -p "$1" && cd "$1"
+}
+
+# Rename a Hyprland workspace.
+# Usage: ws <workspace_number> [new name...]
+ws() {
+    if (( $# < 1 )); then
+        echo "Usage: ws <workspace_number> [new name...]" >&2
+        echo "  ws 1 home    -> 1:home" >&2
+        echo "  ws 1         -> reset to 1" >&2
+        return 2
+    fi
+
+    local ws_id=$1
+    shift
+    local ws_name="$*"
+
+    ~/.config/scripts/workspace-rename.sh rename "$ws_id" "$ws_name"
+}
+
+# Launch the terminal radio selector.
+radio() {
+    ~/.config/scripts/radio.sh "$@"
+}
+
+# Extract any archive
+extract() {
+    if [[ -f "$1" ]]; then
+        case "$1" in
+            *.tar.bz2)   tar xjf "$1"     ;;
+            *.tar.gz)    tar xzf "$1"     ;;
+            *.tar.xz)    tar xJf "$1"     ;;
+            *.tar.zst)   tar --zstd -xf "$1" ;;
+            *.bz2)       bunzip2 "$1"     ;;
+            *.rar)       unrar x "$1"     ;;
+            *.gz)        gunzip "$1"      ;;
+            *.tar)       tar xf "$1"      ;;
+            *.tbz2)      tar xjf "$1"     ;;
+            *.tgz)       tar xzf "$1"     ;;
+            *.zip)       unzip "$1"       ;;
+            *.Z)         uncompress "$1"  ;;
+            *.7z)        7z x "$1"        ;;
+            *)           echo "'$1' cannot be extracted" ;;
+        esac
+    else
+        echo "'$1' is not a valid file"
+    fi
+}
+
+# Quick backup
+bak() {
+    cp -a "$1" "${1}.bak.$(date +%Y%m%d_%H%M%S)"
+}
+
+# Find in files (uses ripgrep if available)
+fif() {
+    if command -v rg &>/dev/null; then
+        rg --files-with-matches --no-messages "$1" | fzf --preview "rg --pretty --context 5 '$1' {}"
+    else
+        grep -rl "$1" . | fzf --preview "grep --color=always -C5 '$1' {}"
+    fi
+}
+
+# Git commit browser with fzf
+fshow() {
+    git log --graph --color=always \
+        --format="%C(auto)%h%d %s %C(black)%C(bold)%cr" |
+    fzf --ansi --no-sort --reverse --tiebreak=index \
+        --preview 'git show --color=always $(echo {} | grep -o "[a-f0-9]\{7\}" | head -1)' \
+        --bind "enter:execute(git show --color=always $(echo {} | grep -o '[a-f0-9]\{7\}' | head -1) | less -R)"
+}
+
+# Quick notes
+note() {
+    local notes_dir="$HOME/notes"
+    mkdir -p "$notes_dir"
+    if [[ -z "$1" ]]; then
+        $EDITOR "$notes_dir/$(date +%Y-%m-%d).md"
+    else
+        echo "$(date +%H:%M): $*" >> "$notes_dir/$(date +%Y-%m-%d).md"
+    fi
+}
+
+# Weather
+weather() {
+    curl -s "wttr.in/${1:-}"
+}
+
+# Cheat sheet
+cheat() {
+    curl -s "cheat.sh/$1"
+}
+
+# WiFi management
+wifiscan() {
+    echo "Scanning for available WiFi networks..."
+    nmcli device wifi list
+}
+
+wificonnect() {
+    if [ -z "$1" ]; then
+        echo "Usage: wificonnect <wifi-name>"
+        return 1
+    fi
+    echo "Connecting to WiFi network: $1"
+    nmcli device wifi connect "$1"
+}
+
+# Yazi file manager with cd on exit
+yy() {
+    local tmp="$(mktemp -t "yazi-cwd.XXXXX")"
+    yazi "$@" --cwd-file="$tmp"
+    if cwd="$(cat -- "$tmp")" && [ -n "$cwd" ] && [ "$cwd" != "$PWD" ]; then
+        builtin cd -- "$cwd"
+    fi
+    rm -f -- "$tmp"
+}
+
+# ============================================================================
+# FZF CONFIGURATION
+# ============================================================================
+if command -v fzf &>/dev/null; then
+    # Use fd for fzf if available
+    if command -v fd &>/dev/null; then
+        export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow --exclude .git'
+        export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+        export FZF_ALT_C_COMMAND='fd --type d --hidden --follow --exclude .git'
+    fi
+
+    export FZF_DEFAULT_OPTS="
+        --height 40%
+        --layout=reverse
+        --border rounded
+        --info=inline
+        --preview-window=right:50%:wrap
+        --bind='ctrl-/:toggle-preview'
+        --color=bg+:#313244,bg:#1e1e2e,spinner:#f5e0dc,hl:#f38ba8
+        --color=fg:#cdd6f4,header:#f38ba8,info:#cba6f7,pointer:#f5e0dc
+        --color=marker:#f5e0dc,fg+:#cdd6f4,prompt:#cba6f7,hl+:#f38ba8"
+
+    # Source fzf keybindings
+    [[ -f /usr/share/fzf/key-bindings.bash ]] && source /usr/share/fzf/key-bindings.bash
+    [[ -f /usr/share/fzf/completion.bash ]] && source /usr/share/fzf/completion.bash
+fi
+
+# ============================================================================
+# TOOL INTEGRATIONS
+# ============================================================================
+
+# Zoxide (smarter cd)
+if command -v zoxide &>/dev/null; then
+    eval "$(zoxide init bash)"
+    alias cd='z'
+fi
+
+# Atuin (synced shell history with fuzzy search)
+# Replaces Ctrl+R with powerful history search
+if command -v atuin &>/dev/null; then
+    eval "$(atuin init bash --disable-up-arrow)"
+fi
+
+# Vivid (better LS_COLORS)
+if command -v vivid &>/dev/null; then
+    export LS_COLORS="$(vivid generate catppuccin-mocha)"
+fi
+
+# Direnv (per-directory environment)
+command -v direnv &>/dev/null && eval "$(direnv hook bash)"
+
+# Conda/Mamba
+if [[ -f "$HOME/miniforge3/etc/profile.d/conda.sh" ]]; then
+    source "$HOME/miniforge3/etc/profile.d/conda.sh"
+    [[ -f "$HOME/miniforge3/etc/profile.d/mamba.sh" ]] && source "$HOME/miniforge3/etc/profile.d/mamba.sh"
+elif [[ -f "$HOME/miniconda3/etc/profile.d/conda.sh" ]]; then
+    source "$HOME/miniconda3/etc/profile.d/conda.sh"
+elif [[ -f "$HOME/mambaforge/etc/profile.d/conda.sh" ]]; then
+    source "$HOME/mambaforge/etc/profile.d/conda.sh"
+fi
+
+# Starship prompt
+if command -v starship &>/dev/null; then
+    export STARSHIP_CONFIG="$XDG_CONFIG_HOME/starship/starship.toml"
+    eval "$(starship init bash)"
+fi
+
+# Kitty shell integration
+if test -n "$KITTY_INSTALLATION_DIR"; then
+    export KITTY_SHELL_INTEGRATION="no-rc"
+    source "$KITTY_INSTALLATION_DIR/shell-integration/bash/kitty.bash"
+fi
+
+# ============================================================================
+# BASH COMPLETION
+# ============================================================================
+[[ -r /usr/share/bash-completion/bash_completion ]] && source /usr/share/bash-completion/bash_completion
+
+# ============================================================================
+# WELCOME MESSAGE
+# ============================================================================
+[[ -f ~/.config/scripts/welcome.sh ]] && source ~/.config/scripts/welcome.sh
+
+# ============================================================================
+# LOCAL OVERRIDES (machine-specific, not in git)
+# ============================================================================
+[[ -f ~/.config/bash/kitty-ssh.sh ]] && source ~/.config/bash/kitty-ssh.sh
+[[ -f ~/.bashrc.local ]] && source ~/.bashrc.local

@@ -1,0 +1,76 @@
+"$schema" = "https://yazi-rs.github.io/schemas/yazi.json"
+
+[mgr]
+ratio = [1, 3, 5]
+sort_by = "natural"
+sort_sensitive = false
+sort_reverse = false
+sort_dir_first = true
+sort_translit = true
+linemode = "mtime"
+show_hidden = false
+show_symlink = true
+scrolloff = 8
+mouse_events = ["click", "scroll"]
+title_format = "Yazi · {cwd}"
+
+[preview]
+wrap = "no"
+tab_size = 2
+max_width = 1600
+max_height = 2000
+image_delay = 0
+image_filter = "lanczos3"
+image_quality = 80
+
+[opener]
+edit = [
+  { run = "${EDITOR:-nvim} %s", desc = "$EDITOR", for = "linux", block = true },
+]
+browser = [
+  { run = "${BROWSER:-xdg-open} %s1", desc = "$BROWSER", for = "linux", orphan = true },
+]
+open = [
+  { run = "xdg-open %s1", desc = "Open", for = "linux", orphan = true },
+]
+reveal = [
+  { run = "xdg-open %d1", desc = "Reveal", for = "linux", orphan = true },
+]
+image = [
+  { run = "imv %s", desc = "imv", for = "linux", orphan = true },
+]
+pdf = [
+  { run = "zathura %s", desc = "zathura", for = "linux", orphan = true },
+]
+media = [
+  { run = "mpv %s", desc = "mpv", for = "linux", orphan = true },
+]
+office = [
+  { run = "libreoffice %s", desc = "LibreOffice", for = "linux", orphan = true },
+]
+extract = [
+  { run = "ya pub extract --list %s", desc = "Extract here" },
+]
+
+[open]
+rules = [
+  { url = "*/", use = ["edit", "open", "reveal"] },
+  { url = "*.{html,htm,xhtml}", use = ["browser", "edit", "reveal"] },
+  { mime = "image/svg+xml", use = ["browser", "edit", "reveal"] },
+  { url = "*.{doc,docx,odt,ods,odp,ppt,pptx,xls,xlsx,csv}", use = ["office", "reveal"] },
+  { mime = "application/pdf", use = ["pdf", "reveal"] },
+  { mime = "image/*", use = ["image", "reveal"] },
+  { mime = "{audio,video}/*", use = ["media", "reveal"] },
+  { mime = "application/{zip,rar,7z*,tar,gzip,xz,zstd,bzip*,lzma,compress,archive,cpio,arj,xar,ms-cab*}", use = ["extract", "reveal"] },
+  { mime = "text/*", use = ["edit", "reveal"] },
+  { mime = "application/{json,ndjson}", use = ["edit", "reveal"] },
+  { mime = "*/javascript", use = ["edit", "reveal"] },
+  { mime = "inode/empty", use = ["edit", "reveal"] },
+  { url = "*", use = ["open", "reveal"] },
+]
+
+[plugin]
+prepend_fetchers = [
+  { id = "git", url = "*", run = "git" },
+  { id = "git", url = "*/", run = "git" },
+]
