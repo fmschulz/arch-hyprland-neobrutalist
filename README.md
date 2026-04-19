@@ -4,6 +4,8 @@
 
 This repo is structured like other public Hyprland dotfile projects: tracked configs, package manifests, install/apply scripts, screenshots space, and a small docs layer that explains the design choices instead of leaving them implicit.
 
+![arch-hyprland-neobrutalist v0.1.0 desktop showcase](assets/screenshots/v0.1.0-desktop.png)
+
 ## Included Components
 
 - Hyprland desktop stack: `hyprland`, `hyprlock`, `hypridle`, Waybar, Mako, Wofi
