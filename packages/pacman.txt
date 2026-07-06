@@ -1,8 +1,11 @@
 hyprland
-hyprpaper
 hypridle
 hyprlock
+hyprsunset
+hyprpolkitagent
+hyprpicker
 xdg-desktop-portal-hyprland
+xdg-desktop-portal-gtk
 kitty
 waybar
 wofi
@@ -11,6 +14,7 @@ awww
 udiskie
 grim
 slurp
+wf-recorder
 wl-clipboard
 cliphist
 brightnessctl
@@ -41,6 +45,7 @@ zathura-pdf-mupdf
 zathura
 fastfetch
 btop
+htop
 tree
 unzip
 7zip
@@ -68,11 +73,15 @@ yq
 udisks2
 python
 python-pip
-pixi
 python-rich
 python-textual
+uv
+ruff
 nodejs
 npm
+typescript-language-server
+eslint
+prettier
 docker
 docker-compose
 parted
@@ -80,6 +89,7 @@ gcc
 cmake
 rust
 go
+gofumpt
 neovim
 vim
 sshfs
@@ -92,7 +102,6 @@ ffmpeg
 sox
 vlc
 eog
-obsidian
 lapce
 libreoffice-fresh
 noto-fonts
@@ -117,10 +126,10 @@ qt5ct
 gsettings-desktop-schemas
 glib2
 polkit
-polkit-gnome
 xdg-utils
 xdg-user-dirs
 mesa
+vulkan-icd-loader
 lm_sensors
 stress
 bandwhich
@@ -146,7 +155,6 @@ ltrace
 hdparm
 powertop
 acpi
-thermald
 fwupd
 fprintd
 upower
@@ -177,3 +185,6 @@ tealdeer
 vivid
 hexyl
 just
+choose
+xh
+grex

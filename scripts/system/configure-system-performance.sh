@@ -20,12 +20,6 @@ if [[ $EUID -ne 0 ]]; then
 fi
 
 TARGET_USER="${1:-${SUDO_USER:-$(logname)}}"
-TARGET_HOME="$(getent passwd "$TARGET_USER" | cut -d: -f6)"
-
-if [[ -z "$TARGET_HOME" ]]; then
-    echo "Could not determine home directory for user: ${TARGET_USER}" >&2
-    exit 1
-fi
 
 echo -e "${GREEN}Configuring system for user: ${TARGET_USER}${NC}"
 
@@ -109,9 +103,17 @@ echo -e "${GREEN}✓ Pacman cache cleanup timer enabled (weekly)${NC}"
 # =============================================================================
 print_step "Configuring automatic power profile switching"
 
-POWER_SCRIPT="${TARGET_HOME}/.config/scripts/auto-power-profile.sh"
+# udev runs RUN+= as root, so install a root-owned copy under /usr/local/lib
+# instead of executing a user-writable file from $HOME.
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(dirname "$(dirname "$SCRIPT_DIR")")"
+POWER_SCRIPT_SRC="${REPO_ROOT}/configs/scripts/auto-power-profile.sh"
+INSTALL_DIR=/usr/local/lib/arch-hypr-neobrutalist
+POWER_SCRIPT="${INSTALL_DIR}/auto-power-profile.sh"
 
-if [[ -f "$POWER_SCRIPT" ]]; then
+if [[ -f "$POWER_SCRIPT_SRC" ]]; then
+    mkdir -p "$INSTALL_DIR"
+    install -m 755 "$POWER_SCRIPT_SRC" "$POWER_SCRIPT"
     cat > /etc/udev/rules.d/99-power-profile-switch.rules << EOF
 # Auto-switch power profile on AC/battery change
 ACTION=="change", SUBSYSTEM=="power_supply", ATTR{type}=="Mains", RUN+="${POWER_SCRIPT}"
@@ -119,7 +121,7 @@ EOF
     udevadm control --reload-rules
     echo -e "${GREEN}✓ Power profile auto-switching configured${NC}"
 else
-    echo -e "${YELLOW}⚠ Power profile script not found at ${POWER_SCRIPT}, skipping udev rule${NC}"
+    echo -e "${YELLOW}⚠ ${POWER_SCRIPT_SRC} not found, skipping udev rule${NC}"
 fi
 
 # =============================================================================

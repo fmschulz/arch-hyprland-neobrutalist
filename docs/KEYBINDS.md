@@ -1,32 +1,65 @@
 # Core Keybinds
 
-Public release keybinds for `v0.1.0`.
+The binds below mirror `configs/hypr/conf.d/50-binds.conf`. `Super` is the
+mod key. A full in-desktop cheatsheet is available at runtime with `Super+/`.
 
 ## Launchers
 
-- `Super+Return` terminal
-- `Super+D` launcher
-- `Super+E` Yazi in Kitty
-- `Super+Shift+R` radio selector in Kitty
+- `Super+Return` terminal (Kitty)
+- `Super+D` app launcher (Wofi)
+- `Super+E` Yazi file manager in Kitty
+- `Super+Shift+R` terminal radio selector
+- `Super+C` clipboard history (cliphist via Wofi)
+- `Super+/` or `Super+F1` keybinding cheatsheet
+
+## Window Management
+
+- `Super+Q` close window
+- `Super+F` fullscreen
+- `Super+V` toggle floating
+- `Super+P` pseudo-tile
+- `Super+J` toggle split direction
+- `Super+G` toggle group (tabbed stack) · `Super+Ctrl+G` cycle group · `Super+Shift+Alt+G` lock group
+- `Super+R` resize submap (arrows / `hjkl`; `Esc`, `Return`, or `Super+R` to exit)
+- `Super+Shift+H/V` · `Super+Ctrl+H/V` step-resize · `Super+Shift+C` center
+- `Super+Alt+Arrows` move focus
+- `Super+Shift+Alt+Arrows` swap window
 
 ## Workspace Flow
 
-- `Super+1..0` switch workspace
-- `Super+Shift+1..0` move window to workspace
-- `Super+Left` / `Super+Right` move between workspaces
-- `Super+A` rename current workspace
-- `Super+Shift+A` workspace overview
-- `Super+Shift+Up` workspace overview
+- `Super+1..0` switch workspace · `Super+Shift+1..0` move window to workspace
+- `Super+Left` / `Super+Right` adjacent workspace · `Super+Tab` previous workspace
+- `Super+S` special workspace · `Super+grave` scratch · `Super+Shift+grave` send to scratch
+- `Super+A` rename current workspace · `Super+Shift+A` workspace overview
 - `ws <number> [name]` rename a workspace from the shell
+
+## Monitors
+
+- `Super+period` / `Super+comma` move window to next/previous monitor
+- `Super+Shift+period` / `Super+Shift+comma` move workspace to next/previous monitor
+- `Super+Ctrl+period` / `Super+Ctrl+comma` focus next/previous monitor
+- `Super+Ctrl+M` monitor connect helper
+
+## Screenshots & Recording
+
+- `Print` region -> `~/Documents/screenshots` + clipboard
+- `Super+Print` copy focused output to clipboard
+- `Super+Ctrl+Print` full output -> `~/Documents/screenshots`
+- `Super+Shift+Print` / `Super+Shift+F12` / `Shift+Print` region -> file + clipboard
+- `Super+Alt+Print` toggle area screen recording -> `~/Documents/screenrecordings`
 
 ## Desktop Actions
 
-- `Super+W` next wallpaper
-- `Super+Shift+W` previous wallpaper
-- `Super+Ctrl+W` random wallpaper
-- `Super+L` lock screen
-- `Super+Alt+P` logout menu
-- `Super+Ctrl+N` clear notifications
+- `Super+W` next wallpaper · `Super+Shift+W` previous · `Super+Ctrl+W` random
+- `Super+L` lock screen · `Super+Alt+P` logout menu · `Super+M` power menu
+- `Super+Alt+R` reload Hyprland/Waybar · `Super+Ctrl+N` clear notifications
+
+## Media & Brightness
+
+- `XF86AudioRaiseVolume` / `LowerVolume` / `Mute` volume control
+- `XF86AudioMicMute` toggle mic mute
+- `XF86AudioPlay` / `Pause` / `Next` / `Prev` media playback (playerctl)
+- `XF86MonBrightnessUp` / `Down` backlight
 
 ## Terminal Shortcuts
 

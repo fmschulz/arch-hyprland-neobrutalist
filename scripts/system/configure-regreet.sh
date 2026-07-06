@@ -32,7 +32,9 @@ install -d -m 700 -o "$GREETER_USER" -g "$GREETER_USER" "/run/user/$RUNTIME_UID"
 
 step "Writing /etc/greetd/config.toml"
 install -d -m 755 /etc/greetd
-cat >/etc/greetd/config.toml <<'GREETD_CFG'
+# Unquoted heredoc so XDG_RUNTIME_DIR follows the actual greeter uid instead
+# of a hardcoded /run/user/950.
+cat >/etc/greetd/config.toml <<GREETD_CFG
 [terminal]
 vt = 1
 switch = true
@@ -46,7 +48,7 @@ HOME = "/var/lib/greetd"
 XDG_CACHE_HOME = "/var/lib/greetd/.cache"
 XDG_CONFIG_HOME = "/var/lib/greetd/.config"
 XDG_DATA_HOME = "/var/lib/greetd/.local/share"
-XDG_RUNTIME_DIR = "/run/user/950"
+XDG_RUNTIME_DIR = "/run/user/${RUNTIME_UID}"
 WAYLAND_DISPLAY = "wayland-0"
 GREETD_CFG
 

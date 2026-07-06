@@ -25,9 +25,12 @@ mkdir -p \
   "$HOME/.config/systemd/user" \
   "$HOME/.config/arch-hypr-neobrutalist" \
   "$HOME/Pictures/wallpapers" \
-  "$HOME/Pictures/screenshots"
+  "$HOME/Documents/screenshots" \
+  "$HOME/Documents/screenrecordings"
 
-for name in bash btop hypr hypridle kitty mako nvim scripts waybar wofi yazi; do
+# hypridle has no entry here: its config is tracked as configs/hypr/hypridle.conf
+# because hypridle only reads ~/.config/hypr/hypridle.conf.
+for name in bash btop hypr kitty mako nvim scripts waybar wofi xdg-desktop-portal yazi; do
   sync_dir "$ROOT/configs/$name" "$HOME/.config/$name"
 done
 
@@ -40,12 +43,6 @@ rsync -a \
 
 if [[ -d "$ROOT/configs/greetd" ]]; then
   ok "greetd theme assets available for optional install"
-fi
-
-if [[ -f "$ROOT/configs/arch-hypr-neobrutalist/bluetooth-devices.conf.example" ]]; then
-  install -m 644 \
-    "$ROOT/configs/arch-hypr-neobrutalist/bluetooth-devices.conf.example" \
-    "$HOME/.config/arch-hypr-neobrutalist/bluetooth-devices.conf.example"
 fi
 
 if [[ -f "$ROOT/configs/arch-hypr-neobrutalist/radio-stations.tsv.example" ]] && [[ ! -f "$HOME/.config/arch-hypr-neobrutalist/radio-stations.tsv" ]]; then
@@ -76,6 +73,9 @@ fi
 
 systemctl --user daemon-reload || true
 systemctl --user enable --now pipewire pipewire-pulse wireplumber 2>/dev/null || true
+systemctl --user enable --now cache-cleanup.timer 2>/dev/null || true
+# bashrc points SSH_AUTH_SOCK at this unit's socket
+systemctl --user enable --now ssh-agent.service 2>/dev/null || true
 
 if [[ -f "$HOME/.config/arch-hypr-neobrutalist/bluetooth-devices.conf" ]]; then
   systemctl --user enable --now bluetooth-autoconnect.service 2>/dev/null || true

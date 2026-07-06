@@ -46,6 +46,52 @@ entry:focus {
   box-shadow: inset 6px 6px 0px rgba(0,0,0,0.15);
 }
 
+/* GTK4 puts the editable text in a child `text` node; without these rules the
+   dark theme keeps the text/caret white on our white field. */
+entry text {
+  color: #000;
+  caret-color: #000;
+}
+
+entry text placeholder {
+  color: rgba(0, 0, 0, 0.45);
+}
+
+/* Session/user pickers (GTK4 combobox + dropdown render their own buttons
+   and popovers, which otherwise stay theme-colored). */
+combobox button,
+dropdown button {
+  background-color: #fff;
+  color: #000;
+  border: 4px solid #000;
+  border-radius: 0;
+  box-shadow: 4px 4px 0px #000;
+}
+
+popover {
+  background-color: transparent;
+}
+
+popover contents {
+  background-color: #FFBE0B;
+  color: #000;
+  border: 4px solid #000;
+  border-radius: 0;
+  box-shadow: 8px 8px 0px #000;
+}
+
+popover modelbutton,
+popover row {
+  color: #000;
+}
+
+popover modelbutton:hover,
+popover row:hover,
+popover row:selected {
+  background-color: #06FFA5;
+  color: #000;
+}
+
 button {
   background-color: #FF006E;
   color: #fff;

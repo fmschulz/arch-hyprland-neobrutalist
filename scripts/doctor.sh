@@ -13,18 +13,30 @@ check_cmd() {
 }
 
 printf '== Commands ==\n'
-for cmd in Hyprland kitty nvim yazi waybar mako wofi jq rsync mpv; do
+for cmd in Hyprland kitty nvim yazi waybar mako wofi jq rsync mpv grimblast wf-recorder hyprlock hypridle; do
   check_cmd "$cmd"
 done
+
+printf '\n== Wallpaper backend ==\n'
+if command -v awww >/dev/null 2>&1 || command -v swww >/dev/null 2>&1; then
+  printf '✓ wallpaper backend present (awww/swww)\n'
+else
+  printf '✖ no wallpaper backend (install awww or swww)\n'
+  failures=$((failures + 1))
+fi
 
 printf '\n== Files ==\n'
 for path in \
   "$HOME/.config/hypr/hyprland.conf" \
   "$HOME/.config/hypr/monitors.conf" \
+  "$HOME/.config/hypr/conf.d/50-binds.conf" \
+  "$HOME/.config/hypr/hypridle.conf" \
+  "$HOME/.config/hypr/hyprsunset.conf" \
   "$HOME/.config/kitty/kitty.conf" \
   "$HOME/.config/nvim/init.lua" \
   "$HOME/.config/yazi/yazi.toml" \
   "$HOME/.config/waybar/config.jsonc" \
+  "$HOME/.config/waybar/style.css" \
   "$HOME/.config/mako/config" \
   "$HOME/.config/arch-hypr-neobrutalist/radio-stations.tsv"; do
   if [[ -f "$path" ]]; then
@@ -44,7 +56,7 @@ else
 fi
 
 printf '\n== State Preservation ==\n'
-if [[ -f "$HOME/.config/hypr/workspace-names.json" ]]; then
+if [[ -f "${XDG_STATE_HOME:-$HOME/.local/state}/hypr/workspace-names.json" ]]; then
   printf '✓ Workspace name state file is present and will not be deleted by make apply\n'
 else
   printf '• Workspace names will be created on first rename and preserved on future applies\n'

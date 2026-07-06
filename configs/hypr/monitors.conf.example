@@ -1,4 +1,37 @@
 # Copy-once local monitor profile.
-# Edit ~/.config/hypr/monitors.conf on each machine instead of the tracked hyprland.conf.
-
+#
+# Installed to ~/.config/hypr/monitors.conf on first `make apply` and then left
+# alone (preserved across future applies). Edit that file for your displays;
+# never edit the tracked hyprland.conf for monitors.
+#
+# Default: auto-detect every output at its preferred mode.
 monitor = ,preferred,auto,1.0
+
+# ---------------------------------------------------------------------------
+# Example: laptop + external dock, keyed by stable EDID descriptions so the
+# layout survives output renumbering. Find your descriptions with:
+#   hyprctl monitors all | grep -E 'Monitor|description'
+# Then uncomment and adapt. monitorv2 requires Hyprland 0.50+.
+# ---------------------------------------------------------------------------
+# monitorv2 {
+#     output = desc:Dell Inc. DELL P3421W C7ZQH53
+#     mode = preferred
+#     position = 0x0
+#     scale = 1.0
+# }
+#
+# monitorv2 {
+#     output = desc:BOE NE135A1M-NY1
+#     mode = 2880x1920@120
+#     position = auto-right
+#     scale = 1.5
+# }
+#
+# monitor = ,preferred,auto,1.0
+#
+# # Pin primary workspaces to the external display when docked.
+# workspace = 1, monitor:desc:Dell Inc. DELL P3421W C7ZQH53, default:true
+# workspace = 2, monitor:desc:Dell Inc. DELL P3421W C7ZQH53
+# workspace = 3, monitor:desc:Dell Inc. DELL P3421W C7ZQH53
+# workspace = 4, monitor:desc:Dell Inc. DELL P3421W C7ZQH53
+# workspace = 5, monitor:desc:Dell Inc. DELL P3421W C7ZQH53

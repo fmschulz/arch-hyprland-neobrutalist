@@ -8,7 +8,7 @@ AC_ONLINE=$(cat /sys/class/power_supply/ACAD/online 2>/dev/null || \
             echo "1")
 
 if [ "$AC_ONLINE" = "1" ]; then
-    powerprofilesctl set balanced
+    powerprofilesctl set performance 2>/dev/null || powerprofilesctl set balanced
 else
-    powerprofilesctl set power-saver
+    powerprofilesctl set power-saver 2>/dev/null || powerprofilesctl set balanced
 fi

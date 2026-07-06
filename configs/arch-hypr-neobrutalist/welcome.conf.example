@@ -1,0 +1,11 @@
+# Local weather location for the terminal welcome banner (welcome.sh).
+# Copy to ~/.config/arch-hypr-neobrutalist/welcome.conf and set your own values.
+# This file is machine-local and intentionally excluded from git.
+#
+# Find coordinates for your city at https://open-meteo.com/ (search box).
+# Leave WEATHER_LAT/WEATHER_LON unset to disable the weather banner entirely.
+
+# WEATHER_CITY="Reykjavik"
+# WEATHER_LAT="64.1466"
+# WEATHER_LON="-21.9426"
+# WEATHER_TZ="auto"   # or e.g. "Atlantic/Reykjavik"; "auto" derives it from coordinates

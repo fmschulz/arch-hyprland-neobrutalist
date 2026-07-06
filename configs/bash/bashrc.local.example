@@ -2,7 +2,7 @@
 # This file is sourced from ~/.bashrc.local if present.
 
 # Private SSH shortcuts
-# alias lab="ssh you@example.org"
+# alias myserver="ssh you@example.org"
 
 # Extra PATH entries
 # export PATH="$HOME/.local/custom/bin:$PATH"

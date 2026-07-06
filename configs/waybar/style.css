@@ -1,43 +1,41 @@
-/* Neo-Brutalist Waybar Style */
+/* Neo-brutalist Waybar style, tuned for daily scanning */
 * {
     font-family: "JetBrains Mono Nerd Font", monospace;
-    font-size: 17px;
+    font-size: 15px;
     font-weight: bold;
 }
 
 window#waybar {
-    background: #FFBE0B;  /* Bright yellow */
+    background: #FFBE0B;
     color: #000000;
-    border-bottom: 4px solid #000000;
+    border-bottom: 3px solid #000000;
 }
 
 /* Workspaces */
 #workspaces {
-    background: #FFBE0B;
-    margin: 6px;
+    background: transparent;
+    margin: 4px 6px;
     padding: 0;
 }
 
 #workspaces button {
-    background: #FB5607;  /* Orange */
+    background: #FFFFFF;
     color: #000000;
-    border: 3px solid #000000;
+    border: 2px solid #000000;
     border-radius: 0;
-    padding: 0 12px;
-    margin: 5px;
-    box-shadow: 4px 4px 0px #000000;
+    padding: 0 10px;
+    margin: 4px;
+    box-shadow: none;
     transition: all 0.1s ease;
 }
 
 #workspaces button:hover {
-    background: #FF006E;  /* Hot pink */
-    box-shadow: 6px 6px 0px #000000;
-    margin-bottom: 2px;
-    margin-right: 2px;
+    background: #06FFA5;
+    box-shadow: 2px 2px 0px #000000;
 }
 
 #workspaces button.active {
-    background: #8338EC;  /* Purple */
+    background: #3A86FF;
     color: #FFFFFF;
     box-shadow: 2px 2px 0px #000000;
 }
@@ -47,8 +45,19 @@ window#waybar {
     animation: blink 0.5s linear infinite alternate;
 }
 
+/* Submap indicator - only visible while a submap is active */
+#submap {
+    background: #8338EC;
+    color: #FFFFFF;
+    border: 2px solid #000000;
+    margin: 5px 4px;
+    padding: 0 12px;
+    box-shadow: 2px 2px 0px #000000;
+}
+
 /* Modules - Base Style */
 #clock,
+#custom-clock,
 #battery,
 #network,
 #pulseaudio,
@@ -57,48 +66,51 @@ window#waybar {
 #idle_inhibitor,
 #custom-updates,
 #custom-system-stats,
+#custom-usb,
 #custom-workspace-overview,
 #tray,
 #custom-power {
-    background: #FB5607;  /* Orange */
+    background: #FFFFFF;
     color: #000000;
-    border: 3px solid #000000;
-    margin: 5px;
-    padding: 0 16px;
-    box-shadow: 4px 4px 0px #000000;
+    border: 2px solid #000000;
+    margin: 5px 4px;
+    padding: 0 12px;
+    box-shadow: none;
 }
 
 /* Combined system stats module */
 #custom-system-stats {
-    background: #FB5607;  /* Orange */
+    background: #FFFFFF;
     color: #000000;
+    padding: 0 10px;
 }
 
 #custom-system-stats.warning {
-    background: #FFB700;  /* Amber */
+    background: #FFBE0B;
     color: #000000;
 }
 
 #custom-system-stats.critical {
-    background: #FF006E;  /* Hot pink */
+    background: #FF006E;
     color: #FFFFFF;
     animation: blink 0.5s linear infinite alternate;
 }
 
 /* Workspace overview button */
 #custom-workspace-overview {
-    background: #06FFA5;  /* Turquoise/Mint */
+    background: #FFFFFF;
     color: #000000;
-    padding: 0 12px;
+    padding: 0 10px;
 }
 
-#clock {
-    background: #06FFA5;  /* Mint green */
+#clock,
+#custom-clock {
+    background: #06FFA5;
     color: #000000;
 }
 
 #battery {
-    background: #FFB700;  /* Amber */
+    background: #FFFFFF;
     color: #000000;
 }
 
@@ -113,7 +125,7 @@ window#waybar {
 }
 
 #network {
-    background: #FB5607;
+    background: #FFFFFF;
     color: #000000;
 }
 
@@ -123,8 +135,8 @@ window#waybar {
 }
 
 #pulseaudio {
-    background: #8338EC;
-    color: #FFFFFF;
+    background: #FFFFFF;
+    color: #000000;
 }
 
 #pulseaudio.muted {
@@ -134,18 +146,18 @@ window#waybar {
 
 /* Backlight */
 #backlight {
-    background: #FFB700;  /* Amber - like sunshine */
+    background: #FFFFFF;
     color: #000000;
 }
 
 /* Bluetooth */
 #bluetooth {
-    background: #3A86FF;  /* Blue */
-    color: #FFFFFF;
+    background: #FFFFFF;
+    color: #000000;
 }
 
 #bluetooth.connected {
-    background: #06FFA5;  /* Mint green */
+    background: #06FFA5;
     color: #000000;
 }
 
@@ -157,8 +169,8 @@ window#waybar {
 
 /* Idle Inhibitor */
 #idle_inhibitor {
-    background: #666666;
-    color: #FFFFFF;
+    background: #FFFFFF;
+    color: #000000;
 }
 
 #idle_inhibitor.activated {
@@ -168,12 +180,20 @@ window#waybar {
 
 /* Updates */
 #custom-updates {
-    background: #8338EC;  /* Purple */
-    color: #FFFFFF;
+    background: transparent;
+    border: none;
+    color: #000000;
+    padding: 0 6px;
+}
+
+#custom-updates.pending {
+    background: #FFBE0B;
+    border: 2px solid #000000;
+    padding: 0 10px;
 }
 
 #tray {
-    background: #FFBE0B;
+    background: transparent;
     box-shadow: none;
     border: none;
 }

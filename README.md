@@ -2,16 +2,20 @@
 
 `v0.1.0` public baseline for a reproducible Arch Linux Hyprland setup with a neo-brutalist visual system.
 
-This repo contains all Hyprland dotfile necessary to set up Neobrutlist Hyprland: tracked configs, package manifests, install/apply scripts, screenshots space, and a small docs layer that explains the design choices instead of leaving them implicit.
+This repo contains all the dotfiles necessary to set up the neo-brutalist Hyprland desktop: tracked configs, package manifests, install/apply scripts, screenshots space, and a small docs layer that explains the design choices instead of leaving them implicit.
 
 ![arch-hyprland-neobrutalist v0.1.0 desktop showcase](assets/screenshots/v0.1.0-desktop.png)
 
 ## Included Components
 
-- Hyprland desktop stack: `hyprland`, `hyprlock`, `hypridle`, Waybar, Mako, Wofi
+- Hyprland desktop stack: `hyprland`, `hyprlock`, `hypridle`, `hyprsunset`, Waybar, Mako, Wofi
+- Modular Hyprland config: `hyprland.conf` sources `conf.d/10-env … 70-windowrules`
+- Neo-brutalist Waybar: Nerd Font iconography, white module fields with accent-colored
+  state, submap/mode indicator, and a clock that opens a calendar popup
 - Shell and terminal workflow: Bash, Kitty, Yazi, Neovim, fzf/zoxide/atuin/starship
 - Login and lock experience: themed `greetd` + `regreet`, lock screen, wallpapers
-- Desktop behavior: workspace rename flow, monitor helpers, power/network/USB scripts
+- Desktop behavior: workspace rename flow, monitor helpers, power/network/USB scripts,
+  screenshots (`grimblast`) and area screen recording (`wf-recorder`), and a `Super+/` cheatsheet
 - Terminal radio: `Super+Shift+R` opens a station selector in Kitty and starts with KALX in the default station list
 
 ## Quick Start
@@ -46,8 +50,11 @@ make greetd
 ## Reproducibility Rules
 
 - Repo-managed files are merged into `~/.config`; local state is preserved on `make apply`.
+- The Hyprland config is modular. Edit a numbered section in
+  `~/.config/hypr/conf.d/` rather than the `hyprland.conf` entry file.
 - Monitor layout is intentionally local.
-  Edit `~/.config/hypr/monitors.conf` instead of the tracked `hyprland.conf`.
+  Edit `~/.config/hypr/monitors.conf` (installed once from the tracked `.example`)
+  instead of the tracked config; it is preserved across every `make apply`.
 - Stateful or private data is intentionally excluded from git.
   This includes Bluetooth MAC addresses, workspace rename state, shell-local overrides, and any personal station additions.
 - Yazi plugins and flavors are restored with `ya pkg install` during `make apply`.
@@ -74,5 +81,6 @@ These files are meant to stay machine-local:
 
 - `~/.config/arch-hypr-neobrutalist/bluetooth-devices.conf`
 - `~/.config/arch-hypr-neobrutalist/radio-stations.tsv`
+- `~/.config/arch-hypr-neobrutalist/welcome.conf` (weather location for the welcome banner)
 - `~/.config/hypr/monitors.conf`
 - `~/.bashrc.local`

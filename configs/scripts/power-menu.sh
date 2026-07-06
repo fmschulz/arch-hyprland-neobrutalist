@@ -4,16 +4,18 @@
 
 set -euo pipefail
 
-options="🔒 Lock
-😴 Sleep
-🔄 Reboot
-⏻ Shutdown
-🚪 Logout"
+options="󰌾 Lock
+󰒲 Sleep
+󰜉 Reboot
+󰐥 Shutdown
+󰍃 Logout"
 
+# 520 = window chrome (~110px) + 5 full ~82px text rows; 320 cut the menu
+# off after "Reboot" with this CSS (verified by screenshot)
 choice=$(echo -e "$options" | wofi --dmenu \
     --prompt "Power" \
-    --width 280 \
-    --height 320 \
+    --width 300 \
+    --height 520 \
     --cache-file /dev/null \
     --insensitive)
 

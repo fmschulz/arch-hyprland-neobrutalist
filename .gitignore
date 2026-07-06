@@ -3,4 +3,10 @@
 *~
 .DS_Store
 configs/arch-hypr-neobrutalist/bluetooth-devices.conf
+configs/arch-hypr-neobrutalist/welcome.conf
 configs/hypr/workspace-names.json
+
+# Agent / tooling artifacts (never publish)
+.memd/
+memory.md
+tasks/

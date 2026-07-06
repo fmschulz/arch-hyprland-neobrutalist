@@ -1,6 +1,6 @@
 #!/bin/bash
 # Clean application caches (browser, Electron apps, thumbnails)
-# Preserves ML caches (huggingface, rattler, uv) for scientific computing
+# Only the caches listed below are removed; tool data caches are left untouched.
 
 set -euo pipefail
 
@@ -25,7 +25,5 @@ rm -rf ~/.cache/thumbnails/* 2>/dev/null || true
 
 # Old yay build files (>30 days)
 find ~/.cache/yay -maxdepth 1 -type d -mtime +30 -exec rm -rf {} + 2>/dev/null || true
-
-# NOTE: Preserving ML caches (huggingface, rattler, uv) for scientific computing
 
 echo "After: $(du -sh ~/.cache 2>/dev/null | cut -f1)"

@@ -3,7 +3,9 @@ set -euo pipefail
 
 # Show Wi-Fi networks sorted by signal strength and connect via nmcli.
 
-menu_cmd=(wofi --dmenu --prompt "Wi-Fi" --width 560 --height 400 --matching fuzzy --allow-markup)
+# 670 = window chrome (~110px) + 7 full ~80px text rows; 400 clipped the
+# bottom row with this CSS (verified by screenshot)
+menu_cmd=(wofi --dmenu --prompt "Wi-Fi" --width 560 --height 670 --matching fuzzy --allow-markup)
 
 if ! command -v nmcli >/dev/null 2>&1; then
   notify-send "Waybar Wi-Fi" "nmcli not available"
@@ -67,6 +69,10 @@ else
   if [[ "$choice_security" == "open" ]]; then
     nmcli device wifi connect "$choice_ssid"
   else
-    nmcli --ask device wifi connect "$choice_ssid"
+    # No TTY under waybar, so `nmcli --ask` could never prompt; ask via wofi.
+    password="$(printf '' | wofi --dmenu --password --prompt "Password for $choice_ssid" \
+      --width 560 --height 60 --lines 1 --cache-file /dev/null)" || exit 0
+    [[ -z "$password" ]] && exit 0
+    nmcli device wifi connect "$choice_ssid" password "$password"
   fi
 fi

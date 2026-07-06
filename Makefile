@@ -11,7 +11,7 @@ help:
 		'  make packages      Install package manifests only' \
 		'  make apply         Sync repo configs into ~/.config and ~/Pictures' \
 		'  make doctor        Check that the setup is wired correctly' \
-		'  make system        Re-run system tuning + USB automount setup' \
+		'  make system        Re-run system tuning' \
 		'  make greetd        Configure greetd/regreet as the login manager'
 
 install:
@@ -31,7 +31,6 @@ doctor:
 
 system:
 	sudo ./scripts/system/configure-system-performance.sh "$${USER}"
-	sudo ./scripts/system/configure-usb-automount.sh "$${USER}"
 
 greetd:
 	sudo ./scripts/system/configure-regreet.sh "$${USER}"

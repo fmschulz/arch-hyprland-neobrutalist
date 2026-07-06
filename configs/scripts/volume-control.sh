@@ -67,6 +67,23 @@ if [[ -n ${target_sinks[0]:-} && $default_sink != "${target_sinks[0]}" ]]; then
   pactl set-default-sink "${target_sinks[0]}" >/dev/null
 fi
 
+# Replaceable OSD via mako (-r keeps one notification; int:value draws the
+# progress bar styled by mako's progress-color). Never fails the script.
+show_osd() {
+  command -v notify-send >/dev/null 2>&1 || return 0
+  local sink="${target_sinks[0]}"
+  local vol muted
+  # head -1: the Volume line carries one percentage per channel
+  vol=$(pactl get-sink-volume "$sink" 2>/dev/null | grep -m1 -oP '\d+(?=%)' | head -1 || true)
+  muted=$(pactl get-sink-mute "$sink" 2>/dev/null | awk '{print $2}' || true)
+  [[ -z "$vol" ]] && return 0
+  if [[ "$muted" == "yes" ]]; then
+    notify-send -r 9993 -u low -t 1500 "Muted" || true
+  else
+    notify-send -r 9993 -u low -t 1500 -h "int:value:${vol}" "Volume ${vol}%" || true
+  fi
+}
+
 case "${1:-}" in
   up)
     for sink in "${target_sinks[@]}"; do
@@ -88,3 +105,5 @@ case "${1:-}" in
     exit 1
     ;;
 esac
+
+show_osd

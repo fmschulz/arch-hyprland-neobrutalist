@@ -1,5 +1,7 @@
 width=600
-height=400
+# 596 = input/window chrome (~106px) + 6 full 70px icon rows; shorter heights
+# clip the bottom row with this CSS (verified by screenshot)
+height=596
 location=center
 show=drun
 prompt=Launch Application

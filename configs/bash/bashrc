@@ -103,7 +103,6 @@ path_prepend "$HOME/bin"
 path_prepend "$HOME/.cargo/bin"
 path_prepend "$HOME/go/bin"
 path_prepend "$HOME/.npm-global/bin"
-path_prepend "$HOME/.pixi/bin"
 path_prepend "$HOME/.config/scripts"
 [[ -d "$ANDROID_HOME" ]] && path_prepend "$ANDROID_HOME/platform-tools"
 
@@ -121,7 +120,8 @@ alias ..='cd ..'
 alias ...='cd ../..'
 alias ....='cd ../../..'
 alias .....='cd ../../../..'
-alias reset=' systemctl --user restart xdg-desktop-portal xdg-desktop-portal-hyprland pipewire wireplumber'
+# Named fixportals on purpose: do not shadow the terminal `reset` command
+alias fixportals=' systemctl --user restart xdg-desktop-portal xdg-desktop-portal-hyprland pipewire wireplumber'
 alias -- -='cd -'
 
 # ============================================================================
@@ -252,12 +252,12 @@ alias pacl='pacman -Ql'               # List package files
 alias paco='pacman -Qtdq'             # List orphans
 alias pacclean='sudo pacman -Rns $(pacman -Qtdq) 2>/dev/null || echo "No orphans"'
 
-# Yay/paru (AUR helpers)
+# Yay/paru (AUR helpers). `pup` = package update; `ya` would shadow yazi's CLI.
 if command -v paru &>/dev/null; then
     alias yay='paru'
-    alias ya='paru -Syu'
+    alias pup='paru -Syu'
 elif command -v yay &>/dev/null; then
-    alias ya='yay -Syu'
+    alias pup='yay -Syu'
 fi
 
 alias ss='sudo systemctl'
@@ -276,17 +276,8 @@ alias ports='ss -tulanp'
 alias myip='curl -s ifconfig.me'
 alias pingg='ping -c 5 google.com'
 
-# SSH wrapper for better terminal compatibility
-ssh() {
-    case "$TERM" in
-        xterm-kitty|kitty)
-            TERM=xterm-256color command ssh "$@"
-            ;;
-        *)
-            command ssh "$@"
-            ;;
-    esac
-}
+# ssh() wrapper lives in ~/.config/bash/kitty-ssh.sh (sourced below); it
+# prefers `kitten ssh` inside Kitty and falls back to TERM=xterm-256color.
 
 # ============================================================================
 # ALIASES - Utilities
@@ -297,17 +288,6 @@ alias py='python'
 alias ipy='ipython'
 alias pip='python -m pip'
 alias venv='python -m venv'
-alias ca='conda activate'
-alias ma='mamba activate'
-alias jl='jupyter lab'
-alias jn='jupyter notebook'
-
-# Pixi
-alias px="pixi"
-alias pxr="pixi run"
-alias pxs="pixi shell"
-alias pxa="pixi add"
-alias pxg="pixi global"
 
 alias mkdir='mkdir -pv'
 alias free='free -h'
@@ -410,7 +390,7 @@ fshow() {
         --format="%C(auto)%h%d %s %C(black)%C(bold)%cr" |
     fzf --ansi --no-sort --reverse --tiebreak=index \
         --preview 'git show --color=always $(echo {} | grep -o "[a-f0-9]\{7\}" | head -1)' \
-        --bind "enter:execute(git show --color=always $(echo {} | grep -o '[a-f0-9]\{7\}' | head -1) | less -R)"
+        --bind 'enter:execute(git show --color=always $(echo {} | grep -o "[a-f0-9]\{7\}" | head -1) | less -R)'
 }
 
 # Quick notes
@@ -509,16 +489,6 @@ fi
 
 # Direnv (per-directory environment)
 command -v direnv &>/dev/null && eval "$(direnv hook bash)"
-
-# Conda/Mamba
-if [[ -f "$HOME/miniforge3/etc/profile.d/conda.sh" ]]; then
-    source "$HOME/miniforge3/etc/profile.d/conda.sh"
-    [[ -f "$HOME/miniforge3/etc/profile.d/mamba.sh" ]] && source "$HOME/miniforge3/etc/profile.d/mamba.sh"
-elif [[ -f "$HOME/miniconda3/etc/profile.d/conda.sh" ]]; then
-    source "$HOME/miniconda3/etc/profile.d/conda.sh"
-elif [[ -f "$HOME/mambaforge/etc/profile.d/conda.sh" ]]; then
-    source "$HOME/mambaforge/etc/profile.d/conda.sh"
-fi
 
 # Starship prompt
 if command -v starship &>/dev/null; then

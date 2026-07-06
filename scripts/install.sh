@@ -37,7 +37,7 @@ EOF
 install_pacman_file() {
   local file="$1"
   local -a pkgs=()
-  mapfile -t pkgs < <(sed -E 's/[[:space:]]+#.*$//' "$file" | sed '/^[[:space:]]*$/d')
+  mapfile -t pkgs < <(sed -E 's/[[:space:]]*#.*$//' "$file" | sed '/^[[:space:]]*$/d')
   (( ${#pkgs[@]} )) || return 0
   log "Installing pacman packages from $(basename "$file")"
   sudo pacman -S --needed --noconfirm "${pkgs[@]}"
@@ -46,7 +46,7 @@ install_pacman_file() {
 install_aur_file() {
   local file="$1"
   local -a pkgs=()
-  mapfile -t pkgs < <(sed -E 's/[[:space:]]+#.*$//' "$file" | sed '/^[[:space:]]*$/d')
+  mapfile -t pkgs < <(sed -E 's/[[:space:]]*#.*$//' "$file" | sed '/^[[:space:]]*$/d')
   (( ${#pkgs[@]} )) || return 0
   log "Installing AUR packages from $(basename "$file")"
   paru -S --needed --noconfirm "${pkgs[@]}"
@@ -113,7 +113,6 @@ fi
 if ! $PACKAGES_ONLY && ! $SKIP_SYSTEM; then
   log "Applying system-level tuning"
   sudo "$ROOT/scripts/system/configure-system-performance.sh" "${USER}"
-  sudo "$ROOT/scripts/system/configure-usb-automount.sh" "${USER}"
   if [[ "$WITH_GREETD" == "1" ]]; then
     sudo "$ROOT/scripts/system/configure-regreet.sh" "${USER}"
   fi
