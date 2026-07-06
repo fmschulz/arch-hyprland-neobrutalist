@@ -1,0 +1,62 @@
+name: install-test
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'packages/**'
+      - 'scripts/**'
+      - 'configs/**'
+      - '.github/workflows/install-test.yml'
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  # Fast gate: every manifest name must resolve (repos via pacman, AUR via RPC).
+  manifests:
+    runs-on: ubuntu-latest
+    container: archlinux:latest
+    steps:
+      - name: Sync pacman db and tools
+        run: pacman -Sy --noconfirm git jq
+      - uses: actions/checkout@v4
+      - name: Resolve pacman manifest names
+        run: |
+          mapfile -t pkgs < <(sed -E 's/[[:space:]]*#.*$//' packages/pacman.txt packages/pacman-amd.txt | sed '/^[[:space:]]*$/d')
+          echo "checking ${#pkgs[@]} repo package names"
+          pacman -Sp --print-format '%n' "${pkgs[@]}" >/dev/null
+      - name: Resolve AUR manifest names
+        run: |
+          mapfile -t pkgs < <(sed -E 's/[[:space:]]*#.*$//' packages/aur.txt | sed '/^[[:space:]]*$/d')
+          echo "checking ${#pkgs[@]} AUR package names"
+          args=$(printf 'arg[]=%s&' "${pkgs[@]}")
+          found=$(curl -s "https://aur.archlinux.org/rpc/?v=5&type=info&${args%&}" | jq -r '.results[].Name' | sort)
+          missing=0
+          for p in "${pkgs[@]}"; do
+            grep -qx "$p" <<<"$found" || { echo "missing from AUR: $p"; missing=1; }
+          done
+          exit "$missing"
+
+  # Full path a new user takes: install packages, apply configs, pass doctor.
+  install:
+    runs-on: ubuntu-latest
+    container: archlinux:latest
+    timeout-minutes: 45
+    steps:
+      - name: Update base image
+        run: |
+          pacman -Sy --noconfirm archlinux-keyring
+          pacman -Syu --noconfirm git sudo rsync base-devel
+      - uses: actions/checkout@v4
+      - name: Create test user with passwordless sudo
+        run: |
+          useradd -m tester
+          echo 'tester ALL=(ALL) NOPASSWD: ALL' > /etc/sudoers.d/tester
+          cp -r "$GITHUB_WORKSPACE" /home/tester/repo
+          chown -R tester:tester /home/tester/repo
+      - name: Install repo packages and apply configs
+        run: su tester -c 'cd ~/repo && ./scripts/install.sh --skip-aur --skip-system'
+      - name: Bootstrap paru and install grimblast (AUR dependency of doctor)
+        run: su tester -c 'cd ~/repo && ./scripts/bootstrap-aur.sh && paru -S --needed --noconfirm grimblast-git'
+      - name: Doctor
+        run: su tester -c 'cd ~/repo && ./scripts/doctor.sh'
