@@ -1,7 +1,7 @@
 SHELL := /usr/bin/env bash
 .DEFAULT_GOAL := help
 
-.PHONY: help install full-install packages apply doctor system greetd
+.PHONY: help install full-install packages apply update doctor system greetd
 
 help:
 	@printf '%s\n' \
@@ -10,6 +10,7 @@ help:
 		'  make full-install  Install everything plus greetd/regreet setup' \
 		'  make packages      Install package manifests only' \
 		'  make apply         Sync repo configs into ~/.config and ~/Pictures' \
+		'  make update        Pull, apply (runs pending migrations), and doctor' \
 		'  make doctor        Check that the setup is wired correctly' \
 		'  make system        Re-run system tuning' \
 		'  make greetd        Configure greetd/regreet as the login manager'
@@ -25,6 +26,11 @@ packages:
 
 apply:
 	./scripts/apply.sh
+
+update:
+	git pull --rebase --autostash
+	./scripts/apply.sh
+	./scripts/doctor.sh
 
 doctor:
 	./scripts/doctor.sh

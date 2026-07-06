@@ -7,6 +7,7 @@ mod key. A full in-desktop cheatsheet is available at runtime with `Super+/`.
 
 - `Super+Return` terminal (Kitty)
 - `Super+D` app launcher (Wofi)
+- `Super+Alt+Space` desktop menu (apps, capture, style, toggles, system)
 - `Super+E` Yazi file manager in Kitty
 - `Super+Shift+M` bester-ytm (YouTube Music TUI)
 - `Super+C` clipboard history (cliphist via Wofi)
@@ -51,6 +52,7 @@ mod key. A full in-desktop cheatsheet is available at runtime with `Super+/`.
 ## Desktop Actions
 
 - `Super+W` next wallpaper · `Super+Shift+W` previous · `Super+Ctrl+W` random
+- `Super+Ctrl+T` next theme (bar, borders, launcher, notifications, terminal)
 - `Super+L` lock screen · `Super+Alt+P` logout menu · `Super+M` power menu
 - `Super+Alt+R` reload Hyprland/Waybar · `Super+Ctrl+N` clear notifications
 

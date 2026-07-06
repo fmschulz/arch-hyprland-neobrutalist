@@ -2,6 +2,17 @@
 
 ## Unreleased
 
+- add an atomic theme system: eight accent themes (yellow default, blue,
+  purple, green, orange, black, darkgrey, white) switch Waybar, Hyprland
+  borders, Wofi, Mako, hyprlock, and Kitty together via per-app fragments
+  behind fixed symlinks; `Super+Ctrl+T` cycles, `theme-set.sh` picks by name
+- add one-shot migrations (`migrations/`, run once per machine by apply) and
+  `make update` (pull + apply + doctor), so existing installs converge on
+  deletions and system cleanup that rsync cannot express
+- add a master desktop menu on `Super+Alt+Space` (`desktop-menu.sh`): apps,
+  capture (screenshot/recording/color picker), style (theme/wallpaper),
+  toggles (Waybar, night light), and system actions
+
 - replace the terminal radio (radio.sh + station list) with
   [bester-ytm](https://github.com/fmschulz/bester-ytm), a YouTube Music TUI
   installed as a `uv` tool by `make apply`; `Super+Shift+M` and the `ytm`

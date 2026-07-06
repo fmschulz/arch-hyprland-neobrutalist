@@ -70,7 +70,8 @@ logo on it):
 
 Now try a workspace: press `Super+2` to switch, `Super+Return` to open a terminal there, and
 `Super+Tab` to jump back and forth between your two workspaces. Press `Super+W` to cycle the
-wallpaper, and `Super+L` to see the lock screen (your password unlocks it).
+wallpaper, `Super+Ctrl+T` to cycle the accent theme, and `Super+L` to see the lock screen
+(your password unlocks it).
 
 You have a working desktop.
 

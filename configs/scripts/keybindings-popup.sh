@@ -22,6 +22,7 @@ build_keybindings_text() {
 Super + Return|Open terminal (Kitty)
 Super + E|File manager (yazi in Kitty)
 Super + D|Application launcher (Wofi)
+Super + Alt + Space|Desktop menu (apps, capture, style, system)
 Super + Shift + M|Music: bester-ytm (YouTube Music TUI)
 Super + / or Super + F1|Show this keybindings cheatsheet
 Super + C|Clipboard history
@@ -107,6 +108,7 @@ EOF
 Super + W|Next wallpaper
 Super + Shift + W|Previous wallpaper
 Super + Ctrl + W|Random wallpaper
+Super + Ctrl + T|Next theme (bar, borders, launcher, terminal)
 EOF
 )"
 

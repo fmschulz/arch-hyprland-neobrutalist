@@ -1,0 +1,5 @@
+/* Theme: black */
+@define-color accent #000000;
+@define-color accent-text #FFFFFF;
+@define-color select #FFBE0B;
+@define-color select-text #000000;

@@ -64,6 +64,30 @@ fi
 
 chmod +x "$HOME/.config/scripts/"* 2>/dev/null || true
 
+# One-shot migrations: each runs once per machine (state survives applies),
+# converging existing installs where rsync cannot (deletes, system cleanup).
+MIGRATIONS_STATE="${XDG_STATE_HOME:-$HOME/.local/state}/arch-hypr-neobrutalist/migrations-applied"
+mkdir -p "$(dirname "$MIGRATIONS_STATE")"
+touch "$MIGRATIONS_STATE"
+for migration in "$ROOT"/migrations/*.sh; do
+  [[ -e "$migration" ]] || continue
+  name=$(basename "$migration")
+  grep -Fxq "$name" "$MIGRATIONS_STATE" && continue
+  if bash "$migration"; then
+    echo "$name" >>"$MIGRATIONS_STATE"
+    ok "Migration applied: $name"
+  else
+    printf '! Migration %s failed; it will retry on the next apply\n' "$name"
+  fi
+done
+
+# Default theme: create the per-app theme symlinks once; theme-set.sh
+# switches them afterwards (Super+Ctrl+T cycles).
+if [[ ! -e "$HOME/.config/waybar/theme.css" ]]; then
+  "$HOME/.config/scripts/theme-set.sh" yellow
+  ok "Default theme set (yellow)"
+fi
+
 if [[ -f "$HOME/.config/bash/bashrc" ]]; then
   if ! grep -Fq '.config/bash/bashrc' "$HOME/.bashrc" 2>/dev/null; then
     {

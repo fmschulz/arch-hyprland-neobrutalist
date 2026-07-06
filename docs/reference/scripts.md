@@ -11,6 +11,8 @@ is plain Bash. "Invoked by" is the normal trigger; every script can also be run 
 | `screenshot.sh` | grimblast wrapper: area/output to file and clipboard | `Print` and friends |
 | `screenrecord.sh` | Area recording toggle (wf-recorder), saves to `~/Documents/screenrecordings` | `Super+Shift+R`, `Super+Alt+Print` |
 | `wallpaper-cycle.sh` | next/prev/random/apply wallpaper via awww (swww fallback) | `Super+W` variants, startup |
+| `theme-set.sh` | Atomic theme switch: retargets theme symlinks, reloads Hyprland/Waybar/Mako | `Super+Ctrl+T`, menu |
+| `desktop-menu.sh` | Master menu: apps, capture, style, toggles, system | `Super+Alt+Space` |
 | `keybindings-popup.sh` | Searchable keybind cheatsheet (wofi, kitty pager fallback) | `Super+/`, `Super+F1` |
 | `workspace-rename.sh` | Rename workspaces, overview menu, Waybar tooltip, state persistence | `Super+A`, `Super+Shift+A`, Waybar |
 | `max-fullscreen.sh` | Toggle a window between tiled and monitor-filling floating | manual |

@@ -34,6 +34,7 @@ nav:
   - How-to guides:
       - how-to/index.md
       - Configure monitors: how-to/configure-monitors.md
+      - Switch themes: how-to/switch-themes.md
       - Set machine-local overrides: how-to/local-overrides.md
       - Set up the greetd login screen: how-to/set-up-greetd.md
       - Maintain packages: how-to/maintain-packages.md

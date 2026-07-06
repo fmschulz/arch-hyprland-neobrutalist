@@ -45,6 +45,8 @@ for path in \
   "$HOME/.config/yazi/yazi.toml" \
   "$HOME/.config/waybar/config.jsonc" \
   "$HOME/.config/waybar/style.css" \
+  "$HOME/.config/waybar/theme.css" \
+  "$HOME/.config/hypr/theme.conf" \
   "$HOME/.config/mako/config"; do
   if [[ -f "$path" ]]; then
     printf '✓ %s\n' "$path"

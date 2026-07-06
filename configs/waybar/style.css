@@ -1,4 +1,8 @@
-/* Neo-brutalist Waybar style, tuned for daily scanning */
+/* Neo-brutalist Waybar style, tuned for daily scanning.
+   theme.css is a symlink maintained by theme-set.sh; it defines
+   @accent, @accent-text, @select, @select-text. */
+@import "theme.css";
+
 * {
     font-family: "JetBrains Mono Nerd Font", monospace;
     font-size: 15px;
@@ -6,8 +10,8 @@
 }
 
 window#waybar {
-    background: #FFBE0B;
-    color: #000000;
+    background: @accent;
+    color: @accent-text;
     border-bottom: 3px solid #000000;
 }
 
@@ -35,8 +39,8 @@ window#waybar {
 }
 
 #workspaces button.active {
-    background: #3A86FF;
-    color: #FFFFFF;
+    background: @select;
+    color: @select-text;
     box-shadow: 2px 2px 0px #000000;
 }
 
@@ -187,7 +191,8 @@ window#waybar {
 }
 
 #custom-updates.pending {
-    background: #FFBE0B;
+    background: @accent;
+    color: @accent-text;
     border: 2px solid #000000;
     padding: 0 10px;
 }

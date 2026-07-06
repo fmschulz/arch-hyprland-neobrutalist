@@ -94,3 +94,21 @@ ones but never deletes files it does not know about, and the machine-local files
 only when missing. The result is that `make apply` is always safe to run - it converges the
 tracked parts and leaves local state alone. `make doctor` is the companion check that the
 wiring (commands, files, hooks) is actually in place.
+
+Deletions and system-level cleanup are what rsync cannot express, so those live in
+`migrations/`: one-shot shell scripts that apply runs exactly once per machine, recording
+applied names in `~/.local/state/arch-hypr-neobrutalist/migrations-applied`. A migration
+that fails (for example, one that needs sudo in a non-interactive run) stays pending and
+retries on the next apply. `make update` chains the whole convergence: pull, apply with
+migrations, doctor.
+
+## Theming is symlink indirection
+
+Every themed surface reads its colors through a fixed path that is really a symlink into
+`~/.config/arch-hypr-neobrutalist/themes/<name>/`: Waybar and Wofi `@import "theme.css"`
+(GTK named colors), Hyprland and hyprlock `source` a fragment defining `$themeAccent`,
+`$themeAccentText`, and `$themeBorder`, Mako `include`s a color fragment, and Kitty
+`include`s a palette file. `theme-set.sh` retargets the five symlinks and reloads Hyprland,
+Waybar (`SIGUSR2` re-reads CSS), and Mako - an atomic switch with no file rewriting. The
+semantic colors (pink for urgent, mint for healthy, purple for submaps) stay constant
+across themes; only the identity accent rotates.

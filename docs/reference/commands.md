@@ -8,6 +8,7 @@
 | `make full-install` | `make install` plus greetd/regreet setup |
 | `make packages` | Install the package manifests only |
 | `make apply` | Sync repo configs into `~/.config` and `~/Pictures` |
+| `make update` | `git pull`, apply (runs pending migrations), doctor |
 | `make doctor` | Check that the setup is wired correctly |
 | `make system` | Re-run system tuning (sysctl, journal, paccache, power profile) |
 | `make greetd` | Configure greetd/regreet as the login manager |
@@ -32,9 +33,14 @@
 3. installs the copy-once local `monitors.conf` only when missing,
 4. marks `~/.config/scripts/*` executable,
 5. hooks `~/.config/bash/bashrc` into `~/.bashrc` (once),
-6. enables user services: pipewire stack, `cache-cleanup.timer`, `ssh-agent.service`, and
+6. runs pending one-shot migrations from `migrations/` (each runs once per machine;
+   applied names are recorded in
+   `~/.local/state/arch-hypr-neobrutalist/migrations-applied`, and a failing migration
+   retries on the next apply),
+7. creates the theme symlinks with the yellow default when missing,
+8. enables user services: pipewire stack, `cache-cleanup.timer`, `ssh-agent.service`, and
    `bluetooth-autoconnect.service` when a device list exists,
-7. syncs Yazi plugins (`ya pkg install`) and refreshes tldr in the background.
+9. syncs Yazi plugins (`ya pkg install`) and refreshes tldr in the background.
 
 ## What `make doctor` checks
 

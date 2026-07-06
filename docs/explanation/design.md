@@ -29,6 +29,14 @@ inspired by one machine. The decisions below are the contract that makes that wo
 Iconography requires **JetBrainsMono Nerd Font** (`ttf-jetbrains-mono-nerd`); without a Nerd
 Font the Waybar glyphs render as tofu boxes.
 
+## Themes rotate the accent, not the language
+
+Eight themes (yellow, blue, purple, green, orange, black, darkgrey, white) swap the identity
+accent - bar background, active border, launcher surfaces, notification background, lock
+input, terminal palette - while the black outlines, white module fields, and semantic colors
+stay fixed. See [Architecture](architecture.md) for the symlink mechanism and the
+[how-to](../how-to/switch-themes.md) for usage.
+
 ## Why the config is modular
 
 The Hyprland config is one entry file plus numbered sections
