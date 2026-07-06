@@ -68,6 +68,16 @@ if [[ -f "$REPO_ROOT/configs/greetd/regreet.css" ]]; then
   install -m 644 "$REPO_ROOT/configs/greetd/regreet.css" /etc/greetd/regreet.css
 fi
 
+step "Wiring gnome-keyring auto-unlock into greetd PAM"
+if [[ -f /usr/lib/security/pam_gnome_keyring.so ]] && ! grep -q pam_gnome_keyring /etc/pam.d/greetd 2>/dev/null; then
+  cat >>/etc/pam.d/greetd <<'PAM'
+
+# Unlock the GNOME keyring with the login password (Chromium secret storage)
+auth       optional     pam_gnome_keyring.so
+session    optional     pam_gnome_keyring.so auto_start
+PAM
+fi
+
 step "Ensuring seat group membership"
 if ! id -nG "$TARGET_USER" | grep -qw seat; then
   usermod -aG seat "$TARGET_USER"

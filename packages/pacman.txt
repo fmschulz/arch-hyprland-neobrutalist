@@ -6,6 +6,7 @@ hyprpolkitagent
 hyprpicker
 xdg-desktop-portal-hyprland
 xdg-desktop-portal-gtk
+gnome-keyring
 kitty
 waybar
 wofi
