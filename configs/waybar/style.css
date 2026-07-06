@@ -34,7 +34,7 @@ window#waybar {
 }
 
 #workspaces button:hover {
-    background: #06FFA5;
+    background: @good;
     box-shadow: 2px 2px 0px #000000;
 }
 
@@ -109,8 +109,8 @@ window#waybar {
 
 #clock,
 #custom-clock {
-    background: #06FFA5;
-    color: #000000;
+    background: @good;
+    color: @good-text;
 }
 
 #battery {
@@ -119,7 +119,8 @@ window#waybar {
 }
 
 #battery.charging {
-    background: #06FFA5;
+    background: @good;
+    color: @good-text;
 }
 
 #battery.critical:not(.charging) {
@@ -161,8 +162,8 @@ window#waybar {
 }
 
 #bluetooth.connected {
-    background: #06FFA5;
-    color: #000000;
+    background: @good;
+    color: @good-text;
 }
 
 #bluetooth.disabled,
@@ -178,8 +179,8 @@ window#waybar {
 }
 
 #idle_inhibitor.activated {
-    background: #06FFA5;  /* Mint green - active/awake */
-    color: #000000;
+    background: @good;  /* semantic "healthy/active"; themes remap it if it would vanish */
+    color: @good-text;
 }
 
 /* Updates */
