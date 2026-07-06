@@ -341,10 +341,8 @@ ws() {
     ~/.config/scripts/workspace-rename.sh rename "$ws_id" "$ws_name"
 }
 
-# Launch the terminal radio selector.
-radio() {
-    ~/.config/scripts/radio.sh "$@"
-}
+# Music: bester-ytm (YouTube Music TUI; installed by apply.sh via uv)
+alias ytm='bester-ytm'
 
 # Extract any archive
 extract() {

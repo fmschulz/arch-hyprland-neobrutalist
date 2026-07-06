@@ -43,7 +43,6 @@ These values are intentionally machine-specific and stay out of git:
 
 - `~/.config/hypr/monitors.conf`
 - `~/.config/arch-hypr-neobrutalist/bluetooth-devices.conf`
-- `~/.config/arch-hypr-neobrutalist/radio-stations.tsv`
 - `~/.config/arch-hypr-neobrutalist/welcome.conf`
 - `~/.local/state/hypr/workspace-names.json`
 - `~/.bashrc.local`
@@ -52,7 +51,7 @@ These values are intentionally machine-specific and stay out of git:
 
 - `make apply` preserves local state instead of deleting non-repo files from `~/.config`.
 - Monitor layout lives in a local file so the tracked Hyprland config stays portable.
-- Radio stations ship with a safe default list that starts with KALX and can be expanded
-  locally.
+- Music is delegated to [bester-ytm](https://github.com/fmschulz/bester-ytm), installed as a
+  `uv` tool rather than vendored, so it versions independently of the desktop.
 - Neovim is intentionally plugin-light: the tracked config uses built-in functionality and a
   tracked theme so the result is reproducible without an external plugin graph.

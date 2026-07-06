@@ -29,7 +29,7 @@
 1. rsyncs each `configs/<name>/` directory into `~/.config/<name>/` (existing extra files in
    those directories are left in place; nothing is deleted),
 2. syncs wallpapers into `~/Pictures/wallpapers/`,
-3. installs copy-once local files (`monitors.conf`, `radio-stations.tsv`) only when missing,
+3. installs the copy-once local `monitors.conf` only when missing,
 4. marks `~/.config/scripts/*` executable,
 5. hooks `~/.config/bash/bashrc` into `~/.bashrc` (once),
 6. enables user services: pipewire stack, `cache-cleanup.timer`, `ssh-agent.service`, and

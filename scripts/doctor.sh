@@ -17,6 +17,14 @@ for cmd in Hyprland kitty nvim yazi waybar mako wofi jq rsync mpv grimblast wf-r
   check_cmd "$cmd"
 done
 
+printf '\n== Music TUI ==\n'
+if command -v bester-ytm >/dev/null 2>&1 || [[ -x "$HOME/.local/bin/bester-ytm" ]]; then
+  printf '✓ bester-ytm installed\n'
+else
+  printf '✖ bester-ytm missing (apply.sh installs it via uv)\n'
+  failures=$((failures + 1))
+fi
+
 printf '\n== Wallpaper backend ==\n'
 if command -v awww >/dev/null 2>&1 || command -v swww >/dev/null 2>&1; then
   printf '✓ wallpaper backend present (awww/swww)\n'
@@ -37,8 +45,7 @@ for path in \
   "$HOME/.config/yazi/yazi.toml" \
   "$HOME/.config/waybar/config.jsonc" \
   "$HOME/.config/waybar/style.css" \
-  "$HOME/.config/mako/config" \
-  "$HOME/.config/arch-hypr-neobrutalist/radio-stations.tsv"; do
+  "$HOME/.config/mako/config"; do
   if [[ -f "$path" ]]; then
     printf '✓ %s\n' "$path"
   else

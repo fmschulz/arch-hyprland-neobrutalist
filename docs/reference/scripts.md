@@ -9,14 +9,13 @@ is plain Bash. "Invoked by" is the normal trigger; every script can also be run 
 | --- | --- | --- |
 | `power-menu.sh` | Lock / sleep / reboot / shutdown / logout menu | `Super+M`, Waybar power button |
 | `screenshot.sh` | grimblast wrapper: area/output to file and clipboard | `Print` and friends |
-| `screenrecord.sh` | Area recording toggle (wf-recorder), saves to `~/Documents/screenrecordings` | `Super+Alt+Print` |
+| `screenrecord.sh` | Area recording toggle (wf-recorder), saves to `~/Documents/screenrecordings` | `Super+Shift+R`, `Super+Alt+Print` |
 | `wallpaper-cycle.sh` | next/prev/random/apply wallpaper via awww (swww fallback) | `Super+W` variants, startup |
 | `keybindings-popup.sh` | Searchable keybind cheatsheet (wofi, kitty pager fallback) | `Super+/`, `Super+F1` |
 | `workspace-rename.sh` | Rename workspaces, overview menu, Waybar tooltip, state persistence | `Super+A`, `Super+Shift+A`, Waybar |
 | `max-fullscreen.sh` | Toggle a window between tiled and monitor-filling floating | manual |
 | `clear-notifications.sh` | Dismiss all Mako notifications | `Super+Ctrl+N` |
 | `calendar-open.sh` / `calendar-tui.sh` | Month/year calendar in a floating Kitty popup | clock click |
-| `radio.sh` | Terminal radio selector (fzf + mpv) | `Super+Shift+R`, `radio` |
 | `wifi-menu.sh` | Wi-Fi network picker with wofi password prompt | network module click |
 | `usb-menu.sh` | Mount/unmount/eject menu for USB drives (udisksctl) | USB module click |
 | `volume-control.sh` | Volume up/down/mute on the active sink, with OSD | volume keys |

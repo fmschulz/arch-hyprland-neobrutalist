@@ -45,11 +45,14 @@ if [[ -d "$ROOT/configs/greetd" ]]; then
   ok "greetd theme assets available for optional install"
 fi
 
-if [[ -f "$ROOT/configs/arch-hypr-neobrutalist/radio-stations.tsv.example" ]] && [[ ! -f "$HOME/.config/arch-hypr-neobrutalist/radio-stations.tsv" ]]; then
-  install -m 644 \
-    "$ROOT/configs/arch-hypr-neobrutalist/radio-stations.tsv.example" \
-    "$HOME/.config/arch-hypr-neobrutalist/radio-stations.tsv"
-  ok "Installed default radio station list"
+# Music TUI (Super+Shift+R): installed once as a uv tool; upgrade with
+# `uv tool upgrade bester-ytm`.
+if command -v uv >/dev/null 2>&1; then
+  if [[ ! -x "$HOME/.local/bin/bester-ytm" ]] && ! command -v bester-ytm >/dev/null 2>&1; then
+    uv tool install --quiet "git+https://github.com/fmschulz/bester-ytm" 2>/dev/null \
+      && ok "Installed bester-ytm (YouTube Music TUI)" \
+      || printf '! bester-ytm install failed (network?); rerun make apply\n'
+  fi
 fi
 
 if [[ -f "$ROOT/configs/hypr/monitors.conf.example" ]] && [[ ! -f "$HOME/.config/hypr/monitors.conf" ]]; then

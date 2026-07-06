@@ -16,7 +16,7 @@ This repo contains all the dotfiles necessary to set up the neo-brutalist Hyprla
 - Login and lock experience: themed `greetd` + `regreet`, lock screen, wallpapers
 - Desktop behavior: workspace rename flow, monitor helpers, power/network/USB scripts,
   screenshots (`grimblast`) and area screen recording (`wf-recorder`), and a `Super+/` cheatsheet
-- Terminal radio: `Super+Shift+R` opens a station selector in Kitty and starts with KALX in the default station list
+- Music: `Super+Shift+M` opens [bester-ytm](https://github.com/fmschulz/bester-ytm), a YouTube Music TUI installed as a `uv` tool by `make apply`
 
 ## Quick Start
 
@@ -93,7 +93,6 @@ wallpapers/  Neo-brutalist wallpaper set used by the desktop and lock screen
 These files are meant to stay machine-local:
 
 - `~/.config/arch-hypr-neobrutalist/bluetooth-devices.conf`
-- `~/.config/arch-hypr-neobrutalist/radio-stations.tsv`
 - `~/.config/arch-hypr-neobrutalist/welcome.conf` (weather location for the welcome banner)
 - `~/.config/hypr/monitors.conf`
 - `~/.bashrc.local`

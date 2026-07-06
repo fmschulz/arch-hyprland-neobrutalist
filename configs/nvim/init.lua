@@ -73,7 +73,7 @@ vim.keymap.set("n", "<leader>x", "<cmd>bdelete<cr>", { desc = "Close buffer" })
 vim.keymap.set("n", "<leader>h", "<cmd>nohlsearch<cr>", { desc = "Clear search highlight" })
 vim.keymap.set("n", "<leader>e", "<cmd>Explore<cr>", { desc = "Open netrw" })
 vim.keymap.set("n", "<leader>y", "<cmd>terminal yazi<cr>", { desc = "Open Yazi" })
-vim.keymap.set("n", "<leader>r", "<cmd>terminal ~/.config/scripts/radio.sh<cr>", { desc = "Open radio selector" })
+vim.keymap.set("n", "<leader>r", "<cmd>terminal ~/.local/bin/bester-ytm<cr>", { desc = "Open bester-ytm" })
 
 vim.o.statusline = table.concat({
   " ",

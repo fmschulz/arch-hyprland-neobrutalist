@@ -8,7 +8,7 @@ mod key. A full in-desktop cheatsheet is available at runtime with `Super+/`.
 - `Super+Return` terminal (Kitty)
 - `Super+D` app launcher (Wofi)
 - `Super+E` Yazi file manager in Kitty
-- `Super+Shift+R` terminal radio selector
+- `Super+Shift+M` bester-ytm (YouTube Music TUI)
 - `Super+C` clipboard history (cliphist via Wofi)
 - `Super+/` or `Super+F1` keybinding cheatsheet
 
@@ -46,7 +46,7 @@ mod key. A full in-desktop cheatsheet is available at runtime with `Super+/`.
 - `Super+Print` copy focused output to clipboard
 - `Super+Ctrl+Print` full output -> `~/Documents/screenshots`
 - `Super+Shift+Print` / `Super+Shift+F12` / `Shift+Print` region -> file + clipboard
-- `Super+Alt+Print` toggle area screen recording -> `~/Documents/screenrecordings`
+- `Super+Shift+R` / `Super+Alt+Print` toggle area screen recording -> `~/Documents/screenrecordings`
 
 ## Desktop Actions
 
@@ -64,6 +64,6 @@ mod key. A full in-desktop cheatsheet is available at runtime with `Super+/`.
 ## Terminal Shortcuts
 
 - `yy` open Yazi and `cd` into the selected directory on exit
-- `radio` open the terminal radio selector
+- `ytm` open bester-ytm (YouTube Music TUI)
 - `health` run the local system health script
 - `cleanup` run the cache cleanup script

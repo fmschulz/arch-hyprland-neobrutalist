@@ -1,7 +1,7 @@
 # How to set machine-local overrides
 
 Machine-specific values stay out of git. Each lives in a local file that `make apply` installs
-once from a tracked `.example` template and then preserves. This guide covers the four override
+once from a tracked `.example` template and then preserves. This guide covers the three override
 files besides [monitors](configure-monitors.md).
 
 ## Weather in the terminal banner
@@ -47,22 +47,6 @@ Trusted devices reconnect automatically and preferred audio sinks are promoted w
 
 2. Run `make apply` from the repo checkout. When the file exists, apply enables the
    `bluetooth-autoconnect.service` user unit, which reconciles connections every 30 seconds.
-
-## Radio stations
-
-`Super+Shift+R` opens a station selector backed by
-`~/.config/arch-hypr-neobrutalist/radio-stations.tsv`. The installer seeds it with a default
-list (starting with KALX). Add stations as tab-separated lines:
-
-```text
-Name<TAB>https://stream.example.org/mp3<TAB>optional note
-```
-
-Lines starting with `#` are comments. Verify with:
-
-```bash
-~/.config/scripts/radio.sh list
-```
 
 ## Shell additions
 

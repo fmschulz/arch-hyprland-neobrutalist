@@ -77,7 +77,7 @@ You have a working desktop.
 ## Next steps
 
 - Multiple displays or a docking station: [configure monitors](../how-to/configure-monitors.md).
-- Weather banner, Bluetooth auto-connect, radio stations:
+- Weather banner and Bluetooth auto-connect:
   [set machine-local overrides](../how-to/local-overrides.md).
 - A themed login screen: [set up greetd](../how-to/set-up-greetd.md).
 - The full keybind list: [keybinds reference](../reference/keybinds.md).

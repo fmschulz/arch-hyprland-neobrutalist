@@ -39,7 +39,6 @@ Created once by the installer, preserved by every `make apply`, excluded from gi
 | --- | --- |
 | `~/.config/hypr/monitors.conf` | Monitor layout |
 | `~/.config/arch-hypr-neobrutalist/bluetooth-devices.conf` | Trusted Bluetooth devices (`MAC\|kind\|label`) |
-| `~/.config/arch-hypr-neobrutalist/radio-stations.tsv` | Radio station list |
 | `~/.config/arch-hypr-neobrutalist/welcome.conf` | Weather location for the terminal banner |
 | `~/.bashrc.local` | Private shell additions |
 | `~/.local/state/hypr/workspace-names.json` | Saved workspace names (written by the rename flow) |

@@ -22,6 +22,7 @@ build_keybindings_text() {
 Super + Return|Open terminal (Kitty)
 Super + E|File manager (yazi in Kitty)
 Super + D|Application launcher (Wofi)
+Super + Shift + M|Music: bester-ytm (YouTube Music TUI)
 Super + / or Super + F1|Show this keybindings cheatsheet
 Super + C|Clipboard history
 Super + L|Lock screen
@@ -90,7 +91,7 @@ Super + Shift + Print|Region -> ~/Documents/screenshots + clipboard
 Super + Ctrl + Print|Full screen -> ~/Documents/screenshots
 Super + Shift + F12|Region -> ~/Documents/screenshots + clipboard
 Shift + Print|Region -> ~/Documents/screenshots + clipboard
-Super + Alt + Print|Toggle area recording -> ~/Documents/screenrecordings
+Super + Shift + R / Super + Alt + Print|Toggle area recording -> ~/Documents/screenrecordings
 EOF
 )"
 

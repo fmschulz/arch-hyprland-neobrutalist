@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+- replace the terminal radio (radio.sh + station list) with
+  [bester-ytm](https://github.com/fmschulz/bester-ytm), a YouTube Music TUI
+  installed as a `uv` tool by `make apply`; `Super+Shift+M` and the `ytm`
+  alias open it, and `make doctor` checks the install
+- `Super+Shift+R` toggles area screen recording (same script as
+  `Super+Alt+Print`)
+
 Sync the public baseline to the live daily-driver desktop (the source of
 truth), keeping machine-specifics as overridable examples and personal data out.
 
