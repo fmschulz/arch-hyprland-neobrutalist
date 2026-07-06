@@ -35,10 +35,12 @@ nm-applet, udiskie (the sole automounter), the clamshell watcher, the wallpaper 
 ## Idle, lock, and sleep
 
 hypridle owns the idle timeline: at 2.5 minutes the backlight drops to minimum and the keyboard
-backlight turns off (both restore on activity); at 5 minutes the session locks
-(`loginctl lock-session`, which hyprlock handles); at 6 minutes the display powers off. Before
-suspend the session locks, and after resume the display is woken explicitly so one keypress is
-enough. hyprlock keeps a 15-second grace window in which any key unlocks without a password.
+backlight turns off (both restore on activity); at 5 minutes the session locks; at 6 minutes the
+display powers off. The lock step runs through `idle-lock.sh`, which skips locking while an
+external monitor is attached - a docked desk is treated as trusted, so displays still sleep but
+wake without a password. Undocked, the full lock applies. Before suspend the session locks, and
+after resume the display is woken explicitly so one keypress is enough. hyprlock keeps a
+15-second grace window in which any key unlocks without a password.
 
 ## Screen capture is allowlisted
 

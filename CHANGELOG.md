@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- skip the 5-minute idle lock while an external monitor is attached
+  (`idle-lock.sh`); displays still power off on idle but wake without a
+  password at the dock, and the full lock applies undocked
+
 - add an atomic theme system: eight accent themes (yellow default, blue,
   purple, green, orange, black, darkgrey, white) switch Waybar, Hyprland
   borders, Wofi, Mako, hyprlock, and Kitty together via per-app fragments
