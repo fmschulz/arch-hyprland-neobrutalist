@@ -1,0 +1,65 @@
+site_name: arch-hyprland-neobrutalist
+site_description: Reproducible Arch Linux + Hyprland desktop with a neo-brutalist visual system.
+site_url: https://fmschulz.github.io/arch-hyprland-neobrutalist/
+repo_url: https://github.com/fmschulz/arch-hyprland-neobrutalist
+edit_uri: edit/main/docs/
+
+theme:
+  name: material
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.top
+    - navigation.indexes
+    - search.suggest
+    - content.code.copy
+    - toc.follow
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: yellow
+      accent: pink
+      toggle: {icon: material/weather-night, name: Switch to dark mode}
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: yellow
+      accent: pink
+      toggle: {icon: material/weather-sunny, name: Switch to light mode}
+
+nav:
+  - Home: index.md
+  - Tutorials:
+      - tutorials/index.md
+      - Install the desktop: tutorials/getting-started.md
+  - How-to guides:
+      - how-to/index.md
+      - Configure monitors: how-to/configure-monitors.md
+      - Set machine-local overrides: how-to/local-overrides.md
+      - Set up the greetd login screen: how-to/set-up-greetd.md
+      - Maintain packages: how-to/maintain-packages.md
+  - Reference:
+      - reference/index.md
+      - Keybinds: reference/keybinds.md
+      - Commands: reference/commands.md
+      - Scripts: reference/scripts.md
+  - Explanation:
+      - explanation/index.md
+      - Design system: explanation/design.md
+      - Architecture: explanation/architecture.md
+
+plugins:
+  - search
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.snippets

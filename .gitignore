@@ -6,7 +6,13 @@ configs/arch-hypr-neobrutalist/bluetooth-devices.conf
 configs/arch-hypr-neobrutalist/welcome.conf
 configs/hypr/workspace-names.json
 
+# MkDocs build output
+site/
+
 # Agent / tooling artifacts (never publish)
 .memd/
 memory.md
 tasks/
+.claude/
+.agents/
+skills/

@@ -61,15 +61,28 @@ make greetd
 
 ## Docs
 
-- `docs/DESIGN.md` explains the palette, typography, component choices, and local override boundaries.
-- `docs/KEYBINDS.md` lists the core desktop shortcuts for the public release.
-- `assets/screenshots/README.md` is the checklist for the visual showcase captures.
+Full documentation - install tutorial, how-to guides, reference, and design explanation -
+lives at <https://fmschulz.github.io/arch-hyprland-neobrutalist/>. It is built from `docs/`
+with MkDocs (Material) and deployed by the `docs` workflow on push to `main`.
+
+Preview locally:
+
+```bash
+uvx --with mkdocs-material mkdocs serve
+```
+
+Quick links into the tree:
+
+- `docs/tutorials/getting-started.md` - install walkthrough
+- `docs/reference/keybinds.md` - core desktop shortcuts
+- `docs/explanation/design.md` - palette, typography, and local override boundaries
+- `assets/screenshots/README.md` - checklist for the visual showcase captures
 
 ## Repo Layout
 
 ```text
 configs/     Desktop, shell, and app configs copied into ~/.config
-docs/        Design notes and keybind references for reproducibility
+docs/        MkDocs documentation site (tutorials, how-to, reference, explanation)
 packages/    Pacman and AUR package manifests
 scripts/     Bootstrap, apply, doctor, and system setup scripts
 wallpapers/  Neo-brutalist wallpaper set used by the desktop and lock screen
