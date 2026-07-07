@@ -30,7 +30,24 @@ mkdir -p \
 
 # hypridle has no entry here: its config is tracked as configs/hypr/hypridle.conf
 # because hypridle only reads ~/.config/hypr/hypridle.conf.
-for name in bash btop hypr kitty mako nvim scripts waybar wofi xdg-desktop-portal yazi; do
+SYNC_DIRS=(bash btop hypr kitty mako nvim scripts waybar wofi xdg-desktop-portal yazi)
+
+# On machines deployed via ~/controlcenter these ~/.config paths are symlinks
+# into that repo; rsync would write straight through them and overwrite its
+# working tree (machine-specific customizations included). Refuse and point at
+# the owning deployer instead. ARCH_APPLY_OVERRIDE=1 bypasses the guard.
+if [[ -z "${ARCH_APPLY_OVERRIDE:-}" ]]; then
+  for name in "${SYNC_DIRS[@]}"; do
+    t="$HOME/.config/$name"
+    if [[ -L "$t" && "$(readlink -f "$t" 2>/dev/null)" == "$HOME/controlcenter/"* ]]; then
+      printf '✗ ~/.config/%s is managed by ~/controlcenter (symlink) — refusing to sync over it.\n' "$name" >&2
+      printf '  Deploy with ~/controlcenter/apply.sh instead, or rerun with ARCH_APPLY_OVERRIDE=1.\n' >&2
+      exit 1
+    fi
+  done
+fi
+
+for name in "${SYNC_DIRS[@]}"; do
   sync_dir "$ROOT/configs/$name" "$HOME/.config/$name"
 done
 
