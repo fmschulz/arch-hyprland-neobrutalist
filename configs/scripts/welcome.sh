@@ -107,3 +107,13 @@ PY
 fi
 
 # Keybindings are not listed here: Super+/ opens the searchable cheatsheet.
+
+# System drift summary - only speaks up when something needs attention.
+if [[ -x "$HOME/.config/scripts/system-doctor.sh" ]]; then
+  doctor_issues="$("$HOME/.config/scripts/system-doctor.sh" 2>/dev/null | grep '^✖' || true)"
+  if [[ -n "$doctor_issues" ]]; then
+    echo "System doctor:"
+    printf '%s\n' "$doctor_issues"
+    echo
+  fi
+fi

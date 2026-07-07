@@ -13,4 +13,10 @@ if [[ -r "$guard" ]] && bash "$guard"; then
   exit 0 # docked: keep the displays on
 fi
 
+# Playing media means a watching-not-typing user, not an absent one. Windowed
+# players don't trigger the fullscreen idle_inhibit rule, so check here too.
+if command -v playerctl >/dev/null 2>&1 && playerctl -a status 2>/dev/null | grep '^Playing' >/dev/null; then
+  exit 0 # media playing: keep the displays on
+fi
+
 hyprctl dispatch dpms off

@@ -6,7 +6,7 @@
 
     "modules-left": ["hyprland/workspaces", "hyprland/window", "hyprland/submap"],
     "modules-center": ["custom/clock"],
-    "modules-right": ["network", "battery", "pulseaudio", "backlight", "bluetooth", "idle_inhibitor", "tray", "custom/system-stats", "custom/updates", "custom/usb", "custom/workspace-overview", "custom/power"],
+    "modules-right": ["network", "battery", "pulseaudio", "backlight", "bluetooth", "idle_inhibitor", "tray", "custom/system-stats", "custom/updates", "custom/usb", "custom/workspace-overview", "custom/doctor", "custom/power"],
 
     "hyprland/workspaces": {
         "disable-scroll": false,
@@ -143,6 +143,14 @@
         "tooltip": true,
         "on-click": "~/.config/scripts/workspace-rename.sh overview",
         "signal": 8
+    },
+
+    "custom/doctor": {
+        "exec": "~/.config/scripts/system-doctor.sh --waybar",
+        "return-type": "json",
+        "interval": 300,
+        "format": "{}",
+        "tooltip": true
     },
 
     "custom/power": {
