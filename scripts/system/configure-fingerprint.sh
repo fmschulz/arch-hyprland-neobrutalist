@@ -39,4 +39,8 @@ wire /etc/pam.d/polkit-1
 
 echo
 echo "Done. Now enroll a finger as your normal user:  fprintd-enroll"
-echo "hyprlock picks up fingerprint auth from its own config (auth { fingerprint })."
+echo
+echo "ONLY AFTER enrollment succeeds, add fingerprint to hyprlock.conf:"
+echo "    auth { fingerprint { enabled = true } }"
+echo "Enabling it with no enrolled prints has locked up hyprlock's keyboard"
+echo "input on this hardware (hard-reset territory). Enroll first, always."
