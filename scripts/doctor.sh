@@ -13,7 +13,7 @@ check_cmd() {
 }
 
 printf '== Commands ==\n'
-for cmd in Hyprland kitty nvim yazi waybar mako wofi jq rsync mpv grimblast wf-recorder hyprlock hypridle; do
+for cmd in Hyprland kitty nvim yazi waybar mako wofi jq rsync mpv grimblast wf-recorder hyprlock hypridle hyprsunset; do
   check_cmd "$cmd"
 done
 

@@ -143,7 +143,7 @@ reapply_wallpaper() {
 restart_waybar() {
 	local helper="${HOME}/.config/scripts/waybar-restart.sh"
 	if [[ -x "${helper}" ]]; then
-		"${helper}"
+		"${helper}" || true
 	fi
 }
 

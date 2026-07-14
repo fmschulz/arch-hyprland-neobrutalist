@@ -26,11 +26,14 @@ monitor layout, which is the one part that differs per machine.
 
 ## The startup chain
 
-`20-autostart.conf` starts the session: Waybar, Mako, hypridle, hyprsunset, the polkit agent
-(hyprpolkitagent), clipboard watchers (`wl-paste` into cliphist, text and images only - the
-primary selection is deliberately not watched so mouse selections do not flood the history),
-nm-applet, udiskie (the sole automounter), the clamshell watcher, the wallpaper daemon via
-`wallpaper-cycle.sh apply`, and restoration of saved workspace names.
+`20-autostart.conf` exports the Hyprland session environment to the systemd user manager, then
+starts Waybar through `waybar-restart.sh`. The helper uses `waybar.service` when the session
+environment is available and falls back to an unmanaged process if the unit cannot start. The
+same file starts Mako, hypridle, hyprsunset, the polkit agent (hyprpolkitagent), clipboard watchers
+(`wl-paste` into cliphist, text and images only - the primary selection is deliberately not
+watched so mouse selections do not flood the history), nm-applet, udiskie (the sole automounter),
+the clamshell watcher, the wallpaper daemon via `wallpaper-cycle.sh apply`, and restoration of
+saved workspace names.
 
 ## Idle, lock, and sleep
 

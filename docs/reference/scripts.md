@@ -39,7 +39,7 @@ is plain Bash. "Invoked by" is the normal trigger; every script can also be run 
 | `clamshell-mode.sh` | Lid open/close handling for docked laptops | lid switch binds + watch loop |
 | `monitor-connect.sh` | Reload + Waybar restart + wallpaper after display changes | `Super+Ctrl+M` |
 | `reload.sh` | Reload Hyprland and restart Waybar | `Super+Alt+R` |
-| `waybar-restart.sh` | Serialized, race-free Waybar restart | other scripts |
+| `waybar-restart.sh` | Serialized Waybar restart through `waybar.service`, with an unmanaged fallback | startup, other scripts |
 | `bluetooth-autoconnect.sh` | Reconnect trusted devices, promote audio sinks | user service |
 | `idle-lock.sh` | Idle lock that skips while an external monitor is attached | hypridle (5 min) |
 | `auto-power-profile.sh` | Performance on AC, power-saver on battery | udev rule |
