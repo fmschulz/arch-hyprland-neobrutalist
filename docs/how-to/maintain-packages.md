@@ -15,7 +15,7 @@ is safe to rerun) and the AUR manifest through `paru`, bootstrapping `paru` firs
 
 ## Apply day-to-day updates
 
-The Waybar update badge polls hourly and shows the pending count. Clicking it opens a terminal
+The bar update badge polls hourly and shows the pending count. Clicking it opens a terminal
 running `sudo pacman -Syu` and refreshes the badge when the upgrade finishes. From a shell, the
 `pup` alias does the same full upgrade including AUR packages (`paru -Syu`).
 

@@ -1,88 +1,61 @@
 #!/bin/bash
-# Hyprland lid watcher to support clamshell mode on docking stations
-# Usage: clamshell-mode.sh [closed|opened|watch] (default: watch)
+# Hyprland lid / clamshell handler.
+#
+# Modes:
+#   closed   one-shot: lid closed  (called from `bindl = , switch:on:Lid Switch`)
+#   open     one-shot: lid opened  (called from `bindl = , switch:off:Lid Switch`)
+#   init     one-shot: apply current lid state once at startup (exec-once)
+#   sync     one-shot: re-apply lid state after a config reload (no lock,
+#            no state-file rewrite). A reload can re-enable the panel while
+#            the lid is still closed, with no switch event to correct it.
+#   daemon   polling fallback loop (default if no/unknown arg)
+#
+# When docked (an external monitor is present) and the lid closes, internal
+# workspaces are moved to the external display, the internal panel is disabled,
+# and the session is locked. Workspace placement is persisted so `open` can restore it
+# even though each invocation is a separate process.
 
 set -euo pipefail
 
-# Internal panel is resolved by name (eDP-1) by default. Docked laptops whose
-# internal output renumbers can instead match by stable EDID description, e.g.
-#   INTERNAL_OUTPUT_DESC="BOE NE135A1M-NY1" clamshell-mode.sh
-INTERNAL_OUTPUT_DESC="${INTERNAL_OUTPUT_DESC:-}"
-INTERNAL_OUTPUT_FALLBACK="${INTERNAL_OUTPUT:-eDP-1}"
-INTERNAL_MODE="${INTERNAL_MODE:-preferred,auto,1.0}"
+INTERNAL_OUTPUT="${INTERNAL_OUTPUT:-}"
+INTERNAL_MODE="${INTERNAL_MODE:-}"
 LID_STATE_PATH="${LID_STATE_PATH:-/proc/acpi/button/lid/LID0/state}"
-# Lid edges are handled by Hyprland 'bindl = , switch:on/off:Lid Switch' binds
-# invoking this script with closed/opened; the watch loop is only a
-# low-frequency reconcile backstop.
-POLL_INTERVAL="${POLL_INTERVAL:-15}"
-MONITOR_SETTLE_DELAY="${MONITOR_SETTLE_DELAY:-0.5}"
-# Moved-workspace ids are persisted here so the one-shot 'closed' invocation
-# can hand restore state to the one-shot 'opened' (separate processes).
-STATE_FILE="${XDG_STATE_HOME:-$HOME/.local/state}/hypr/clamshell-moved-workspaces"
+POLL_INTERVAL="${POLL_INTERVAL:-1}"
+STATE_FILE="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}/clamshell-moved-workspaces"
 LOG_PREFIX="[clamshell]"
 
-INTERNAL_OUTPUT=""
-declare -a MOVED_WORKSPACES=()
-
-log() {
-	echo "${LOG_PREFIX} $*"
-}
+log() { echo "${LOG_PREFIX} $*"; }
 
 require_tools() {
-	command -v hyprctl >/dev/null 2>&1 || {
-		log "hyprctl not found; exiting"
-		exit 0
-	}
-	command -v jq >/dev/null 2>&1 || {
-		log "jq not found; exiting"
-		exit 0
-	}
+  command -v hyprctl >/dev/null 2>&1 || { log "hyprctl not found; exiting"; exit 0; }
+  command -v jq >/dev/null 2>&1 || { log "jq not found; exiting"; exit 0; }
 }
 
-wait_for_hypr() {
-	local retries=0
-	while ! hyprctl -j monitors >/dev/null 2>&1; do
-		sleep 1
-		retries=$((retries + 1))
-		if ((retries >= 30)); then
-			log "Hyprland IPC unavailable; exiting"
-			exit 0
-		fi
-	done
-}
-
-resolve_internal_output() {
-	local output
-	output=$(
-		hyprctl -j monitors all | jq -r \
-			--arg desc "${INTERNAL_OUTPUT_DESC}" \
-			--arg fallback "${INTERNAL_OUTPUT_FALLBACK}" '
-      (
-        (if $desc == "" then empty else map(select(((.description // "") == $desc) or ((.description // "") | startswith($desc)))) | .[0].name end)
-      ) // (
-        map(select(.name == $fallback)) | .[0].name
-      ) // empty
-    '
-	)
-
-	if [[ -z "${output}" ]]; then
-		log "Internal display not found by description '${INTERNAL_OUTPUT_DESC}' or fallback '${INTERNAL_OUTPUT_FALLBACK}'"
-		return 1
-	fi
-
-	INTERNAL_OUTPUT="${output}"
+find_internal_output() {
+  [[ -n "${INTERNAL_OUTPUT}" ]] || INTERNAL_OUTPUT=$(hyprctl -j monitors all | jq -r \
+    '[.[] | select(.name | test("^(eDP|LVDS)-"))][0].name // empty')
+  [[ -n "${INTERNAL_OUTPUT}" ]] || { log "No internal display found; exiting"; exit 0; }
 }
 
 current_lid_state() {
-	if [[ -r "${LID_STATE_PATH}" ]]; then
-		awk '{print $2}' "${LID_STATE_PATH}"
-	else
-		echo "open"
-	fi
+  if [[ -r "${LID_STATE_PATH}" ]]; then
+    awk '{print $2}' "${LID_STATE_PATH}"
+  else
+    echo "open"
+  fi
+}
+
+on_ac() {
+  local supply
+  for supply in /sys/class/power_supply/*; do
+    [[ -r "$supply/online" && "$(cat "$supply/online")" == 1 ]] || continue
+    [[ "$(cat "$supply/type" 2>/dev/null)" != Battery ]] && return 0
+  done
+  return 1
 }
 
 pick_target_monitor() {
-	hyprctl -j monitors | jq -r --arg internal "${INTERNAL_OUTPUT}" '
+  hyprctl -j monitors | jq -r --arg internal "${INTERNAL_OUTPUT}" '
     map(select(.name != $internal and (.disabled == false))) as $exts |
     if ($exts | length) == 0 then "" else
       (if ($exts | map(select(.focused == true)) | length) > 0 then
@@ -95,155 +68,130 @@ pick_target_monitor() {
 }
 
 fetch_internal_workspaces() {
-	hyprctl -j workspaces | jq -r --arg internal "${INTERNAL_OUTPUT}" '.[] | select(.monitor == $internal and .id > 0) | .id'
+  hyprctl -j workspaces | jq -r --arg internal "${INTERNAL_OUTPUT}" '.[] | select(.monitor == $internal) | .id'
 }
 
-internal_output_enabled() {
-	local disabled
-	disabled=$(
-		hyprctl -j monitors all | jq -r --arg internal "${INTERNAL_OUTPUT}" '
-      map(select(.name == $internal)) | .[0].disabled // false
-    '
-	)
-	[[ "${disabled}" == "false" ]]
+apply_lid_closed() {
+  # CLAMSHELL_SYNC=1: reload re-sync — keep the lid-close STATE_FILE (so a
+  # later `open` still restores the original set) and skip the session lock.
+  local target ws sync="${CLAMSHELL_SYNC:-0}"
+  target=$(pick_target_monitor)
+
+  if [[ -z "${target}" ]]; then
+    [[ "${sync}" == "1" ]] || : >"${STATE_FILE}" 2>/dev/null || true
+    if on_ac; then
+      # On AC logind ignores the lid (setup/configure-clamshell-awake.sh) so
+      # SSH sessions survive a closed lid at the desk: lock and blank the
+      # panel ourselves. On battery logind suspends (before_sleep_cmd locks).
+      hyprctl dispatch dpms off >/dev/null 2>&1 || true
+      log "Lid closed (undocked, on AC) -> session locked, panel off, no suspend"
+    else
+      log "Lid closed, no external monitor, on battery -> handled by logind suspend"
+    fi
+    return 0
+  fi
+
+  # Docked clamshell.
+  [[ "${sync}" == "1" ]] || : >"${STATE_FILE}" 2>/dev/null || true
+  while IFS= read -r ws; do
+    [[ -n "${ws}" ]] || continue
+    [[ "${sync}" == "1" ]] || echo "${ws}" >>"${STATE_FILE}" 2>/dev/null || true
+    hyprctl dispatch moveworkspacetomonitor "${ws}" "${target}" >/dev/null 2>&1 || true
+  done < <(fetch_internal_workspaces)
+
+  hyprctl keyword monitor "${INTERNAL_OUTPUT}",disable >/dev/null 2>&1 || true
+  hyprctl dispatch focusmonitor "${target}" >/dev/null 2>&1 || true
+  if [[ "${sync}" == "1" ]]; then
+    log "Reload sync (lid closed, docked) -> external ${target}; internal panel re-disabled"
+  else
+    log "Lid closed (docked) -> external ${target}; internal panel disabled; session locked"
+  fi
 }
 
-restore_internal_workspaces() {
-	local ws
-	# The in-memory array is primary; fall back to the state file written by a
-	# prior one-shot 'closed' invocation.
-	if ((${#MOVED_WORKSPACES[@]} == 0)) && [[ -r "${STATE_FILE}" ]]; then
-		readarray -t MOVED_WORKSPACES <"${STATE_FILE}"
-	fi
-	for ws in "${MOVED_WORKSPACES[@]}"; do
-		[[ -n "${ws}" ]] || continue
-		hyprctl dispatch moveworkspacetomonitor "${ws}" "${INTERNAL_OUTPUT}" >/dev/null 2>&1 || true
-	done
-	MOVED_WORKSPACES=()
-	rm -f "${STATE_FILE}" 2>/dev/null || true
+apply_lid_opened() {
+  local ws
+  log "Lid opened -> restoring internal display"
+  if [[ -n "${INTERNAL_MODE}" ]]; then
+    hyprctl keyword monitor "${INTERNAL_OUTPUT}","${INTERNAL_MODE}" >/dev/null 2>&1 || true
+  else
+    hyprctl reload >/dev/null 2>&1 || true
+  fi
+  hyprctl dispatch dpms on >/dev/null 2>&1 || true  # undocked-on-AC close blanked it
+  sleep 1
+  if [[ -r "${STATE_FILE}" ]]; then
+    while IFS= read -r ws; do
+      [[ -n "${ws}" ]] || continue
+      hyprctl dispatch moveworkspacetomonitor "${ws}" "${INTERNAL_OUTPUT}" >/dev/null 2>&1 || true
+    done <"${STATE_FILE}"
+    : >"${STATE_FILE}" 2>/dev/null || true
+  fi
 }
 
-set_internal_disabled() {
-	local disabled="$1"
-
-	if [[ "${disabled}" == "true" ]]; then
-		hyprctl keyword monitor "${INTERNAL_OUTPUT},disable" >/dev/null 2>&1 || true
-	else
-		hyprctl keyword monitor "${INTERNAL_OUTPUT},${INTERNAL_MODE}" >/dev/null 2>&1 || true
-	fi
-}
-
-reapply_wallpaper() {
-	local wallpaper_script="${HOME}/.config/scripts/wallpaper-cycle.sh"
-	if [[ -x "${wallpaper_script}" ]]; then
-		"${wallpaper_script}" apply >/dev/null 2>&1 || true
-	fi
-}
-
-restart_waybar() {
-	local helper="${HOME}/.config/scripts/waybar-restart.sh"
-	if [[ -x "${helper}" ]]; then
-		"${helper}" || true
-	fi
+with_display_lock() {
+  local action=$1 profile_dir profile_script
+  profile_dir="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}/controlcenter-display-${HYPRLAND_INSTANCE_SIGNATURE:-none}"
+  profile_script="$(dirname "$(realpath "${BASH_SOURCE[0]}")")/display-profile.sh"
+  mkdir -p "$profile_dir"
+  # End a preview before lid changes, then hold its transaction lock while applying
+  # the lid policy. The preview guard restores first and cannot undo our lid state.
+  if [[ -x "$profile_script" ]]; then "$profile_script" revert || true; fi
+  (
+    flock -w 5 8 || { log "Display preview did not release its lock"; exit 1; }
+    "$action"
+  ) 8>"$profile_dir/lock"
 }
 
 handle_lid_closed() {
-	local target
-	readarray -t MOVED_WORKSPACES < <(fetch_internal_workspaces)
-	target=$(pick_target_monitor || true)
-	if [[ -z "${target}" ]]; then
-		log "No external monitor detected; skipping clamshell actions"
-		MOVED_WORKSPACES=()
-		rm -f "${STATE_FILE}" 2>/dev/null || true
-		return
-	fi
+  # Lock before waiting for a display transaction, including a failed guard.
+  [[ "${CLAMSHELL_SYNC:-0}" == "1" ]] || loginctl lock-session >/dev/null 2>&1 || true
+  with_display_lock apply_lid_closed
+}
+handle_lid_opened() { with_display_lock apply_lid_opened; }
 
-	log "Lid closed -> moving ${#MOVED_WORKSPACES[@]} workspaces to ${target}"
-	mkdir -p "$(dirname "${STATE_FILE}")" 2>/dev/null || true
-	: >"${STATE_FILE}" 2>/dev/null || true
-	local ws
-	for ws in "${MOVED_WORKSPACES[@]}"; do
-		echo "${ws}" >>"${STATE_FILE}" 2>/dev/null || true
-		hyprctl dispatch moveworkspacetomonitor "${ws}" "${target}" >/dev/null 2>&1 || true
-	done
+run_daemon() {
+  if [[ ! -r "${LID_STATE_PATH}" ]]; then
+    log "Lid state path ${LID_STATE_PATH} not readable; exiting"
+    exit 0
+  fi
 
-	set_internal_disabled true
-	hyprctl dispatch focusmonitor "${target}" >/dev/null 2>&1 || true
-	sleep "${MONITOR_SETTLE_DELAY}"
-	reapply_wallpaper
+  local last_state state
+  last_state=$(current_lid_state)
+  log "Daemon fallback; initial lid state: ${last_state}"
+  [[ "${last_state}" == "closed" ]] && handle_lid_closed
 
-	restart_waybar
+  while true; do
+    sleep "${POLL_INTERVAL}"
+    state=$(current_lid_state)
+    if [[ "${state}" != "${last_state}" ]]; then
+      if [[ "${state}" == "closed" ]]; then
+        handle_lid_closed
+      else
+        handle_lid_opened
+      fi
+      last_state="${state}"
+    fi
+  done
 }
 
-handle_lid_opened() {
-	log "Lid opened -> restoring internal display"
-	set_internal_disabled false
-	sleep 1
-	restore_internal_workspaces
-	reapply_wallpaper
-
-	restart_waybar
+main() {
+  require_tools
+  find_internal_output
+  case "${1:-daemon}" in
+    closed) handle_lid_closed ;;
+    open)   handle_lid_opened ;;
+    init)
+      if [[ "$(current_lid_state)" == "closed" ]]; then
+        handle_lid_closed
+      fi
+      ;;
+    sync)
+      if [[ "$(current_lid_state)" == "closed" ]]; then
+        CLAMSHELL_SYNC=1 handle_lid_closed
+      fi
+      ;;
+    daemon|"") run_daemon ;;
+    *) log "Unknown mode: ${1}"; exit 2 ;;
+  esac
 }
 
-run_once() {
-	local action="$1"
-
-	require_tools
-	wait_for_hypr
-	resolve_internal_output || exit 0
-
-	if [[ "${action}" == "closed" ]]; then
-		handle_lid_closed
-	else
-		# Workspace restore state from a prior one-shot close is read back
-		# from STATE_FILE inside restore_internal_workspaces.
-		handle_lid_opened
-	fi
-}
-
-watch_loop() {
-	require_tools
-
-	if [[ ! -r "${LID_STATE_PATH}" ]]; then
-		log "Lid state path ${LID_STATE_PATH} not readable; exiting"
-		exit 0
-	fi
-
-	wait_for_hypr
-	resolve_internal_output || exit 0
-
-	log "Initial lid state: $(current_lid_state); internal output: ${INTERNAL_OUTPUT}"
-
-	# Lid edges are handled by the bindl one-shots; this loop only reconciles
-	# actual monitor enablement against the lid state so each edge is not
-	# handled twice (double waybar restart, focus yank).
-	while true; do
-		local state
-		state=$(current_lid_state)
-		if [[ "${state}" == "closed" ]] && internal_output_enabled; then
-			log "Lid closed but ${INTERNAL_OUTPUT} is enabled; re-applying clamshell mode"
-			handle_lid_closed
-		elif [[ "${state}" != "closed" ]] && ! internal_output_enabled; then
-			log "Lid open but ${INTERNAL_OUTPUT} is disabled; restoring internal display"
-			handle_lid_opened
-		fi
-		sleep "${POLL_INTERVAL}"
-		resolve_internal_output || continue
-	done
-}
-
-case "${1:-watch}" in
-closed)
-	run_once closed
-	;;
-opened | open)
-	run_once opened
-	;;
-watch)
-	watch_loop
-	;;
-*)
-	echo "Usage: $0 [closed|opened|watch]" >&2
-	exit 1
-	;;
-esac
+main "$@"

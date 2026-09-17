@@ -1,47 +1,51 @@
-/* Neo-brutalist Waybar style, tuned for daily scanning.
-   theme.css is a symlink maintained by theme-set.sh; it defines
-   @accent, @accent-text, @select, @select-text. */
+/* Neo-Brutalist Waybar Style, tuned for the 1280x800 internal panel — the
+   sizes below are 70% of the fw13 values and are deliberately not shared.
+   theme.css is a symlink maintained by theme-set.sh; it defines @accent,
+   @accent-text, @select, @select-text, @good and @good-text. Borders and
+   shadows stay black so the brutalist outline survives every theme. */
 @import "theme.css";
 
 * {
     font-family: "JetBrains Mono Nerd Font", monospace;
-    font-size: 15px;
+    font-size: 12px; /* 70% of 17px */
     font-weight: bold;
 }
 
 window#waybar {
     background: @accent;
     color: @accent-text;
-    border-bottom: 3px solid #000000;
+    border-bottom: 3px solid #000000; /* 70% of 4px */
 }
 
 /* Workspaces */
 #workspaces {
-    background: transparent;
-    margin: 4px 6px;
+    background: @accent;
+    margin: 4px; /* 70% of 6px */
     padding: 0;
 }
 
 #workspaces button {
-    background: #FFFFFF;
+    background: #FB5607;  /* Orange */
     color: #000000;
-    border: 2px solid #000000;
+    border: 2px solid #000000; /* 70% of 3px */
     border-radius: 0;
-    padding: 0 10px;
-    margin: 4px;
-    box-shadow: none;
+    padding: 0 8px; /* 70% of 12px */
+    margin: 3px; /* 70% of 5px */
+    box-shadow: 3px 3px 0px #000000; /* 70% of 4px */
     transition: all 0.1s ease;
 }
 
 #workspaces button:hover {
     background: @good;
-    box-shadow: 2px 2px 0px #000000;
+    box-shadow: 4px 4px 0px #000000; /* 70% of 6px */
+    margin-bottom: 1px; /* 70% of 2px */
+    margin-right: 1px;  /* 70% of 2px */
 }
 
 #workspaces button.active {
     background: @select;
     color: @select-text;
-    box-shadow: 2px 2px 0px #000000;
+    box-shadow: 1px 1px 0px #000000; /* 70% of 2px */
 }
 
 #workspaces button.urgent {
@@ -49,72 +53,33 @@ window#waybar {
     animation: blink 0.5s linear infinite alternate;
 }
 
-/* Submap indicator - only visible while a submap is active */
-#submap {
-    background: #8338EC;
-    color: #FFFFFF;
-    border: 2px solid #000000;
-    margin: 5px 4px;
-    padding: 0 12px;
-    box-shadow: 2px 2px 0px #000000;
-}
-
-/* Modules - Base Style */
+/* Modules */
 #clock,
-#custom-clock,
 #battery,
 #network,
-#pulseaudio,
-#backlight,
-#bluetooth,
-#idle_inhibitor,
-#custom-updates,
 #custom-system-stats,
-#custom-usb,
-#custom-workspace-overview,
+#pulseaudio,
+#bluetooth,
 #tray,
+#backlight,
 #custom-power {
-    background: #FFFFFF;
-    color: #000000;
-    border: 2px solid #000000;
-    margin: 5px 4px;
-    padding: 0 12px;
-    box-shadow: none;
-}
-
-/* Combined system stats module */
-#custom-system-stats {
-    background: #FFFFFF;
-    color: #000000;
-    padding: 0 10px;
-}
-
-#custom-system-stats.warning {
-    background: #FFBE0B;
-    color: #000000;
-}
-
-#custom-system-stats.critical {
-    background: #FF006E;
+    background: #FB5607;  /* Orange */
     color: #FFFFFF;
-    animation: blink 0.5s linear infinite alternate;
+    border: 2px solid #000000; /* 70% of 3px */
+    margin: 3px; /* 70% of 5px */
+    padding: 0 11px; /* 70% of 16px */
+    box-shadow: 3px 3px 0px #000000; /* 70% of 4px */
 }
 
-/* Workspace overview button */
-#custom-workspace-overview {
-    background: #FFFFFF;
-    color: #000000;
-    padding: 0 10px;
-}
-
-#clock,
-#custom-clock {
+#clock {
     background: @good;
     color: @good-text;
+    /* Reserve some space so it stays visible */
+    min-width: 140px;
 }
 
 #battery {
-    background: #FFFFFF;
+    background: #FFB700;  /* Amber */
     color: #000000;
 }
 
@@ -123,42 +88,9 @@ window#waybar {
     color: @good-text;
 }
 
-#battery.critical:not(.charging) {
-    background: #FF006E;
-    color: #FFFFFF;
-    animation: blink 0.5s linear infinite alternate;
-}
-
-#network {
-    background: #FFFFFF;
-    color: #000000;
-}
-
-#network.disconnected {
-    background: #FF006E;
-    color: #FFFFFF;
-}
-
-#pulseaudio {
-    background: #FFFFFF;
-    color: #000000;
-}
-
-#pulseaudio.muted {
-    background: #000000;
-    color: #FFFFFF;
-}
-
-/* Backlight */
-#backlight {
-    background: #FFFFFF;
-    color: #000000;
-}
-
-/* Bluetooth */
 #bluetooth {
-    background: #FFFFFF;
-    color: #000000;
+    background: #3185FC;
+    color: #FFFFFF;
 }
 
 #bluetooth.connected {
@@ -172,34 +104,68 @@ window#waybar {
     color: #FFFFFF;
 }
 
-/* Idle Inhibitor */
-#idle_inhibitor {
+#battery.critical:not(.charging) {
+    background: #FF006E;
+    color: #FFFFFF;
+    animation: blink 0.5s linear infinite alternate;
+}
+
+/* Compact system stats: icon only, numbers live in the tooltip. Inherits the
+   module padding above so it keeps the 70% scale. */
+#custom-system-stats {
     background: #FFFFFF;
     color: #000000;
 }
 
-#idle_inhibitor.activated {
-    background: @good;  /* semantic "healthy/active"; themes remap it if it would vanish */
-    color: @good-text;
+#custom-system-stats.warning {
+    background: #FFBE0B;
+    color: #000000;
 }
 
-/* Updates */
+#custom-system-stats.critical {
+    background: #FF006E;
+    color: #FFFFFF;
+    animation: blink 0.5s linear infinite alternate;
+}
+
+/* Update indicator: invisible until there is something to install. */
 #custom-updates {
     background: transparent;
     border: none;
+    box-shadow: none;
     color: #000000;
-    padding: 0 6px;
+    padding: 0 4px; /* 70% of 6px */
 }
 
 #custom-updates.pending {
     background: @accent;
     color: @accent-text;
-    border: 2px solid #000000;
-    padding: 0 10px;
+    border: 2px solid #000000; /* 70% of 3px */
+    padding: 0 11px; /* 70% of 16px */
+}
+
+#network {
+    background: #FB5607;
+    color: #000000;
+}
+
+#network.disconnected {
+    background: #FF006E;
+    color: #FFFFFF;
+}
+
+#pulseaudio {
+    background: #8338EC;
+    color: #FFFFFF;
+}
+
+#pulseaudio.muted {
+    background: #000000;
+    color: #FFFFFF;
 }
 
 #tray {
-    background: transparent;
+    background: @accent;
     box-shadow: none;
     border: none;
 }
@@ -224,7 +190,7 @@ window#waybar {
 tooltip {
     background: #000000;
     color: #FFFFFF;
-    border: 3px solid #FF006E;
+    border: 2px solid #FF006E; /* 70% of 3px */
     border-radius: 0;
-    box-shadow: 6px 6px 0px #FF006E;
+    box-shadow: 4px 4px 0px #FF006E; /* 70% of 6px */
 }

@@ -1,5 +1,6 @@
-/* Neo-Brutalist Wofi Style.
-   theme.css is a symlink maintained by theme-set.sh. */
+/* Neo-Brutalist Wofi Style. theme.css is a symlink maintained by theme-set.sh;
+   it defines @accent and @accent-text. Entries keep their white background and
+   black outline so the list stays readable in every theme. */
 @import "theme.css";
 
 window {

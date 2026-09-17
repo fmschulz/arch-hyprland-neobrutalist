@@ -1,12 +1,14 @@
 hyprland
 hypridle
 hyprlock
+hyprpaper
 hyprsunset
 hyprpolkitagent
 hyprpicker
 xdg-desktop-portal-hyprland
 xdg-desktop-portal-gtk
 gnome-keyring
+gnome-calendar
 kitty
 waybar
 wofi
@@ -126,6 +128,7 @@ breeze-icons
 qt5ct
 gsettings-desktop-schemas
 glib2
+libadwaita
 polkit
 xdg-utils
 xdg-user-dirs
@@ -176,6 +179,20 @@ tokei
 hyperfine
 glow
 pacman-contrib
+
+# Pinned AGS 3 build and runtime dependencies
+gdk-pixbuf2
+gobject-introspection
+gtk4
+gtk4-layer-shell
+json-glib
+libarchive
+libsoup3
+meson
+ninja
+pkgconf
+swayosd
+wlsunset
 
 # Modern CLI tools - Rust/Go alternatives
 mold

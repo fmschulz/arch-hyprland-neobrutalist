@@ -1,8 +1,8 @@
 # How to set machine-local overrides
 
-Machine-specific values stay out of git. Each lives in a local file that `make apply` installs
-once from a tracked `.example` template and then preserves. This guide covers the three override
-files besides [monitors](configure-monitors.md).
+Machine-specific values stay out of git. Create the preference files below from
+their `.example` templates; `make apply` preserves them. Monitor files are created
+automatically, as described in [configure monitors](configure-monitors.md).
 
 ## Weather in the terminal banner
 

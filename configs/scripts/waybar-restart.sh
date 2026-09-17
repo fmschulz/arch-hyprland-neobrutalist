@@ -3,6 +3,10 @@
 
 set -euo pipefail
 
+# The trial supervisor holds this lock only while AGS owns the bar.
+exec 8>"${XDG_RUNTIME_DIR:-/tmp}/controlcenter-ags.lock"
+flock -s -n 8 || exit 0
+
 LOCK_FILE="${XDG_RUNTIME_DIR:-/tmp}/waybar-restart.lock"
 LOG_FILE="${XDG_RUNTIME_DIR:-/tmp}/waybar.log"
 
@@ -44,6 +48,6 @@ stop_waybar() {
     fi
 
     stop_waybar
-    setsid waybar >"${LOG_FILE}" 2>&1 200>&- &
+    setsid waybar >"${LOG_FILE}" 2>&1 200>&- 8>&- &
     disown
 ) 200>"${LOCK_FILE}"

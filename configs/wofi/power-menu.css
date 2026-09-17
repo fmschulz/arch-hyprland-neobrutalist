@@ -1,0 +1,62 @@
+/* Neo-Brutalist Power Menu Style */
+
+window {
+    margin: 0px;
+    border: 4px solid #000000;
+    background-color: #FFBE0B;
+    border-radius: 0px;
+    font-family: "JetBrains Mono Nerd Font";
+    font-size: 12px;
+    font-weight: bold;
+}
+
+/* The search bar is hidden via "-D hide_search=true" in power-menu.sh;
+   GTK CSS has no display property, so hiding it here never worked. */
+
+#inner-box {
+    margin: 2px;
+    padding: 2px;
+    background-color: #FFBE0B;
+    border: none;
+}
+
+#outer-box {
+    margin: 0px;
+    padding: 0px;
+    background-color: #FFBE0B;
+    border: none;
+}
+
+#scroll {
+    margin: 0px;
+    border: none;
+}
+
+#text {
+    margin: 2px;
+    padding: 4px;
+    color: #000000;
+    font-weight: bold;
+}
+
+#entry {
+    background-color: #FFFFFF;
+    color: #000000;
+    border: 2px solid #000000;
+    border-radius: 0px;
+    margin: 2px;
+    padding: 4px;
+    box-shadow: 2px 2px 0px #000000;
+}
+
+#entry:selected {
+    background-color: #FF006E;
+    color: #FFFFFF;
+    box-shadow: 3px 3px 0px #000000;
+}
+
+#entry:hover {
+    background-color: #06FFA5;
+    color: #000000;
+    box-shadow: 2px 2px 0px #000000;
+}

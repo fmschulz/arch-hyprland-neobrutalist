@@ -1,0 +1,217 @@
+@define-color accent #FFBE0B;
+@define-color accent_text #000000;
+@define-color selected #3A86FF;
+@define-color selected_text #FFFFFF;
+@define-color good #06FFA5;
+@define-color good_text #000000;
+
+window { background: transparent; color: #161616; }
+window, button, entry, label {
+  font-family: "JetBrainsMono Nerd Font", monospace;
+  font-size: 12px;
+}
+button, menubutton > button {
+  background: #FAFAF7;
+  color: #161616;
+  border: 2px solid #161616;
+  border-radius: 0;
+  box-shadow: none;
+  padding: 7px 10px;
+  min-height: 20px;
+  font-weight: 700;
+}
+button:hover { background: #E7E7E0; }
+button:focus-visible, entry:focus-within { outline: 2px solid @selected; outline-offset: -4px; }
+.control-center button:disabled { opacity: 1; color: #65655E; background: #F0F0EB; border-color: #B6B6AD; }
+button.active, button.chosen { outline: 3px solid @selected; outline-offset: -4px; }
+button.active { background: @selected; color: @selected_text; }
+.control-center button.active:disabled { background: #DCE5F4; color: #4D5C73; }
+button.brand, .panel-header { background: @accent; color: @accent_text; }
+.bar {
+  background: @accent;
+  color: @accent_text;
+  border-bottom: 3px solid #000000;
+  min-height: 39px;
+}
+.bar, .bar button, .bar label {
+  font-family: "JetBrains Mono Nerd Font", monospace;
+  font-size: 12px;
+  font-weight: bold;
+}
+.bar .workspaces {
+  background: @accent;
+  margin: 4px;
+  padding: 0;
+}
+.bar .workspace {
+  background: #FB5607;
+  color: #000000;
+  border: 2px solid #000000;
+  border-radius: 0;
+  padding: 0 8px;
+  margin: 3px;
+  min-width: 18px;
+  min-height: 20px;
+  box-shadow: 3px 3px 0 #000000;
+  transition: all 100ms ease;
+}
+.bar .workspace:hover {
+  background: @good;
+  color: @good_text;
+  box-shadow: 4px 4px 0 #000000;
+  margin-bottom: 1px;
+  margin-right: 1px;
+}
+.bar .workspace.active {
+  background: @selected;
+  color: @selected_text;
+  outline: none;
+  box-shadow: 1px 1px 0 #000000;
+}
+.bar .workspace.urgent {
+  background: #FF006E;
+  color: #FFFFFF;
+  animation: bar-blink 500ms linear infinite alternate;
+}
+.bar .window-title {
+  color: @accent_text;
+  margin: 0 3px 0 0;
+}
+.bar .bar-module {
+  background: #FB5607;
+  color: #FFFFFF;
+  border: 2px solid #000000;
+  border-radius: 0;
+  margin: 3px;
+  padding: 0 11px;
+  min-height: 20px;
+  box-shadow: 3px 3px 0 #000000;
+}
+.bar .clock {
+  background: @good;
+  color: @good_text;
+  min-width: 140px;
+}
+.bar .battery {
+  background: #FFB700;
+  color: #000000;
+}
+.bar .battery.charging {
+  background: @good;
+  color: @good_text;
+}
+.bar .battery.critical {
+  background: #FF006E;
+  color: #FFFFFF;
+  animation: bar-blink 500ms linear infinite alternate;
+}
+.bar .network {
+  background: #FB5607;
+  color: #000000;
+}
+.bar .network.disconnected {
+  background: #FF006E;
+  color: #FFFFFF;
+}
+.bar .bluetooth {
+  background: #3185FC;
+  color: #FFFFFF;
+}
+.bar .bluetooth.connected {
+  background: @good;
+  color: @good_text;
+}
+.bar .bluetooth.off {
+  background: #666666;
+  color: #FFFFFF;
+}
+.bar .audio {
+  background: #8338EC;
+  color: #FFFFFF;
+}
+.bar .audio.muted {
+  background: #000000;
+  color: #FFFFFF;
+}
+.bar .system-stats {
+  background: #FFFFFF;
+  color: #000000;
+}
+.bar .system-stats.warning {
+  background: #FFBE0B;
+}
+.bar .system-stats.critical, .bar .system-stats.error {
+  background: #FF006E;
+  color: #FFFFFF;
+  animation: bar-blink 500ms linear infinite alternate;
+}
+.bar .updates {
+  background: transparent;
+  color: #000000;
+  border: 0;
+  box-shadow: none;
+  padding: 0 4px;
+}
+.bar .updates.pending {
+  background: @accent;
+  color: @accent_text;
+  border: 2px solid #000000;
+  padding: 0 11px;
+}
+.bar .tray {
+  background: @accent;
+  margin: 3px;
+  padding: 0 11px;
+}
+.bar .tray button {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  margin: 0;
+  padding: 4px;
+}
+.bar .power {
+  background: #FB5607;
+  color: #FFFFFF;
+}
+@keyframes bar-blink {
+  to {
+    background: #FFFFFF;
+    color: #000000;
+  }
+}
+.control-center {
+  background: #FAFAF7;
+  border: 3px solid #161616;
+  box-shadow: 5px 5px #161616;
+  margin: 0 5px 5px 0;
+}
+.panel-header { padding: 15px; border-bottom: 3px solid #161616; }
+.panel-header .title { font-size: 19px; font-weight: 900; }
+.panel-header .subtitle { margin-top: 4px; font-size: 10px; }
+.tabs { border-bottom: 2px solid #161616; }
+.tabs button { border: 0; border-right: 1px solid #161616; padding: 11px 4px; }
+.page { padding: 16px; }
+.widget-card { padding: 12px; border: 1px solid #B6B6AD; background: #FFFFFF; }
+.notification-card { padding: 10px; border: 1px solid #B6B6AD; background: #FFFFFF; }
+.widget-card .section-title { margin-top: 0; }
+.section-title { font-weight: 900; font-size: 12px; margin-top: 4px; }
+.hint { font-size: 10px; color: #55554F; }
+.feedback { padding: 10px; background: #FFF0C2; color: #302600; border-left: 4px solid #C17D00; }
+.wallpaper { padding: 4px; }
+entry {
+  background: #FFFFFF;
+  color: #161616;
+  border: 2px solid #161616;
+  border-radius: 0;
+  padding: 8px;
+  min-height: 22px;
+  caret-color: #161616;
+}
+switch { border-radius: 0; border: 2px solid #161616; background: #D7D7D0; }
+switch:checked { background: @selected; }
+switch slider { border-radius: 0; background: #FFFFFF; }
+popover > contents { background: #FAFAF7; border: 2px solid #161616; border-radius: 0; padding: 10px; }
+tooltip { background: #161616; color: #FFFFFF; border-radius: 0; }
+.control-center scrollbar { background: #E7E7E0; min-width: 9px; }
+.control-center scrollbar slider { background: #777770; border-radius: 0; border: 0; min-width: 5px; margin: 2px; }

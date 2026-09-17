@@ -1,43 +1,36 @@
 #!/usr/bin/env bash
-# Power menu with lock, sleep, reboot, shutdown options
-# Uses wofi with proper sizing for all options
-
 set -euo pipefail
 
-options="󰌾 Lock
-󰒲 Sleep
-󰜉 Reboot
-󰐥 Shutdown
-󰍃 Logout"
+# Power menu (wofi) for Hyprland.
 
-# 520 = window chrome (~110px) + 5 full ~82px text rows; 320 cut the menu
-# off after "Reboot" with this CSS (verified by screenshot)
-choice=$(echo -e "$options" | wofi --dmenu \
+options=$(
+  cat <<'EOF'
+Lock
+Sleep
+Logout
+Reboot
+Shutdown
+EOF
+)
+
+# hide_search: the CSS "#input { display: none }" trick is a no-op in GTK CSS,
+# so the search bar still rendered and clipped Shutdown at height 300.
+choice=$(
+  printf '%s\n' "$options" | wofi --dmenu \
     --prompt "Power" \
-    --width 300 \
-    --height 520 \
-    --cache-file /dev/null \
-    --insensitive)
+    --style ~/.config/wofi/power-menu.css \
+    --width 240 \
+    --height 280 \
+    -D hide_search=true \
+    --cache-file /dev/null
+)
 
-[[ -z "$choice" ]] && exit 0
+[[ -z "${choice:-}" ]] && exit 0
 
 case "$choice" in
-    *Lock*)
-        hyprlock
-        ;;
-    *Sleep*)
-        systemctl suspend
-        ;;
-    *Reboot*)
-        systemctl reboot
-        ;;
-    *Shutdown*)
-        systemctl poweroff
-        ;;
-    *Logout*)
-        hyprctl dispatch exit
-        ;;
-    *)
-        exit 0
-        ;;
+  Lock) ~/.config/scripts/secure-lock.sh ;;
+  Sleep) systemctl suspend ;;
+  Logout) ~/.config/scripts/clear-sensitive-state.sh || true; hyprctl dispatch exit ;;
+  Reboot) ~/.config/scripts/clear-sensitive-state.sh || true; systemctl reboot ;;
+  Shutdown) ~/.config/scripts/clear-sensitive-state.sh || true; systemctl poweroff ;;
 esac

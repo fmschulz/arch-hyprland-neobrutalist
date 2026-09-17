@@ -13,7 +13,7 @@ check_cmd() {
 }
 
 printf '== Commands ==\n'
-for cmd in Hyprland kitty nvim yazi waybar mako wofi jq rsync mpv grimblast wf-recorder hyprlock hypridle hyprsunset; do
+for cmd in Hyprland kitty nvim yazi waybar mako wofi jq rsync mpv grimblast wf-recorder hyprlock hypridle hyprpaper hyprsunset; do
   check_cmd "$cmd"
 done
 
@@ -25,19 +25,23 @@ else
   failures=$((failures + 1))
 fi
 
-printf '\n== Wallpaper backend ==\n'
-if command -v awww >/dev/null 2>&1 || command -v swww >/dev/null 2>&1; then
-  printf '✓ wallpaper backend present (awww/swww)\n'
+printf '\n== AGS Runtime ==\n'
+runtime_env="${AGS_RUNTIME_ENV:-$HOME/.local/share/arch-hypr-neobrutalist/ags/env.sh}"
+if [[ -f "$runtime_env" ]] && (
+  # shellcheck disable=SC1090
+  source "$runtime_env"
+  command -v ags >/dev/null 2>&1
+  [[ -d "${AGS_JS_PACKAGE:-}" ]]
+); then
+  printf '✓ pinned AGS runtime: %s\n' "$runtime_env"
 else
-  printf '✖ no wallpaper backend (install awww or swww)\n'
+  printf '✖ pinned AGS runtime missing or incomplete: %s\n' "$runtime_env"
   failures=$((failures + 1))
 fi
 
 printf '\n== Files ==\n'
 for path in \
-  "$HOME/.config/hypr/hyprland.conf" \
-  "$HOME/.config/hypr/monitors.conf" \
-  "$HOME/.config/hypr/conf.d/50-binds.conf" \
+  "$HOME/.config/ags/app.tsx" \
   "$HOME/.config/hypr/hypridle.conf" \
   "$HOME/.config/hypr/hyprsunset.conf" \
   "$HOME/.config/kitty/kitty.conf" \
@@ -46,8 +50,34 @@ for path in \
   "$HOME/.config/waybar/config.jsonc" \
   "$HOME/.config/waybar/style.css" \
   "$HOME/.config/waybar/theme.css" \
-  "$HOME/.config/hypr/theme.conf" \
   "$HOME/.config/mako/config"; do
+  if [[ -f "$path" ]]; then
+    printf '✓ %s\n' "$path"
+  else
+    printf '✖ %s\n' "$path"
+    failures=$((failures + 1))
+  fi
+done
+
+printf '\n== Active Hyprland Config ==\n'
+if [[ -f "$HOME/.config/hypr/hyprland.lua" ]]; then
+  hypr_paths=(
+    "$HOME/.config/hypr/hyprland.lua"
+    "$HOME/.config/hypr/monitors.lua"
+    "$HOME/.config/hypr/conf.d/50-binds.lua"
+    "$HOME/.config/hypr/theme.lua"
+  )
+  printf '✓ Lua entrypoint selected\n'
+else
+  hypr_paths=(
+    "$HOME/.config/hypr/hyprland.conf"
+    "$HOME/.config/hypr/monitors.conf"
+    "$HOME/.config/hypr/conf.d/50-binds.conf"
+    "$HOME/.config/hypr/theme.conf"
+  )
+  printf '✓ legacy entrypoint selected\n'
+fi
+for path in "${hypr_paths[@]}"; do
   if [[ -f "$path" ]]; then
     printf '✓ %s\n' "$path"
   else

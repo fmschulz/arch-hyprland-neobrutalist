@@ -1,0 +1,31 @@
+local main_mod = "SUPER"
+
+local move_mode_off = [[sh -lc 'hyprctl dispatch submap reset && hyprctl notify -1 1000 "rgb(000000)" "Move mode off"']]
+hl.define_submap("move", function()
+    hl.bind("left", hl.dsp.window.move({ x = -40, y = 0, relative = true }), { repeating = true })
+    hl.bind("right", hl.dsp.window.move({ x = 40, y = 0, relative = true }), { repeating = true })
+    hl.bind("up", hl.dsp.window.move({ x = 0, y = -40, relative = true }), { repeating = true })
+    hl.bind("down", hl.dsp.window.move({ x = 0, y = 40, relative = true }), { repeating = true })
+    hl.bind("h", hl.dsp.window.move({ x = -40, y = 0, relative = true }), { repeating = true })
+    hl.bind("l", hl.dsp.window.move({ x = 40, y = 0, relative = true }), { repeating = true })
+    hl.bind("k", hl.dsp.window.move({ x = 0, y = -40, relative = true }), { repeating = true })
+    hl.bind("j", hl.dsp.window.move({ x = 0, y = 40, relative = true }), { repeating = true })
+    hl.bind(main_mod .. " + V", hl.dsp.exec_cmd(move_mode_off))
+    hl.bind("Return", hl.dsp.exec_cmd(move_mode_off))
+    hl.bind("Escape", hl.dsp.exec_cmd(move_mode_off))
+end)
+
+local resize_mode_off = [[sh -lc 'hyprctl dispatch submap reset && hyprctl notify -1 1000 "rgb(000000)" "Resize mode off"']]
+hl.define_submap("resize", function()
+    hl.bind("left", hl.dsp.window.resize({ x = -40, y = 0, relative = true }), { repeating = true })
+    hl.bind("right", hl.dsp.window.resize({ x = 40, y = 0, relative = true }), { repeating = true })
+    hl.bind("up", hl.dsp.window.resize({ x = 0, y = -40, relative = true }), { repeating = true })
+    hl.bind("down", hl.dsp.window.resize({ x = 0, y = 40, relative = true }), { repeating = true })
+    hl.bind("h", hl.dsp.window.resize({ x = -40, y = 0, relative = true }), { repeating = true })
+    hl.bind("l", hl.dsp.window.resize({ x = 40, y = 0, relative = true }), { repeating = true })
+    hl.bind("k", hl.dsp.window.resize({ x = 0, y = -40, relative = true }), { repeating = true })
+    hl.bind("j", hl.dsp.window.resize({ x = 0, y = 40, relative = true }), { repeating = true })
+    hl.bind(main_mod .. " + R", hl.dsp.exec_cmd(resize_mode_off))
+    hl.bind("Return", hl.dsp.exec_cmd(resize_mode_off))
+    hl.bind("Escape", hl.dsp.exec_cmd(resize_mode_off))
+end)

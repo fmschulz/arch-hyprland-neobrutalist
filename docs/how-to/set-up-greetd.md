@@ -1,8 +1,7 @@
 # How to set up the greetd login screen
 
-The repo ships a neo-brutalist theme for greetd/regreet: a yellow login card with thick black
-borders that matches the rest of the desktop. Setting it up replaces your current login manager,
-so do this after the desktop itself works.
+The greetd/regreet theme uses a yellow login card with thick black borders.
+Set it up after the desktop works, since it replaces your login manager.
 
 ## Steps
 
@@ -12,13 +11,13 @@ so do this after the desktop itself works.
    make greetd
    ```
 
-   (Fresh installs can do everything in one shot with `make full-install` instead of
-   `make install`.)
+   For a new installation, `make full-install` includes this step.
 
    The script installs `greetd`, `greetd-regreet`, `seatd`, and `cage`; writes
    `/etc/greetd/config.toml` and `/etc/greetd/regreet.toml`; deploys the stylesheet to
    `/etc/greetd/regreet.css`; adds your user and the `greeter` user to the `seat` group;
-   enables `seatd` and `greetd`; and sets the default boot target to graphical.
+   enables `seatd` and `greetd` for the next boot; and sets the default boot target
+   to graphical. It does not restart the display manager in the current session.
 
 2. Reboot:
 

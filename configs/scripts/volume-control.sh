@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Ensure volume keys adjust whichever PulseAudio/ PipeWire sink is currently
-# playing audio (or, if idle, the first available sink).
+# Volume control helper for Hyprland media keys.
+# Uses wpctl (PipeWire) if available, otherwise falls back to pactl.
 
 set -euo pipefail
 
@@ -9,101 +9,49 @@ STEP="${2:-5}"
 if ! [[ $STEP =~ ^[0-9]+$ ]]; then
   STEP=5
 fi
-if ! command -v pactl >/dev/null 2>&1; then
-  echo "pactl is required but not available" >&2
+
+action="${1:-}"
+if [[ -z "$action" ]]; then
+  echo "Usage: $0 {up|down|mute} [step-percent]" >&2
   exit 1
 fi
 
-sink_dump=$(pactl list sinks)
-mapfile -t sink_names < <(printf '%s\n' "$sink_dump" | awk -F': ' '$1 == "\tName" {print $2}')
-
-if ((${#sink_names[@]} == 0)); then
-  echo "No sinks found" >&2
-  exit 1
-fi
-
-declare -a running_sinks=()
-declare -a idle_sinks=()
-declare -a other_sinks=()
-current_name=""
-current_state=""
-while IFS= read -r line; do
-  if [[ $line =~ ^Sink\ #[0-9]+ ]]; then
-    current_name=""
-    current_state=""
-    continue
-  fi
-  if [[ $line =~ ^[[:space:]]*State:\ ([A-Z]+) ]]; then
-    current_state=${BASH_REMATCH[1]}
-    continue
-  fi
-  if [[ $line =~ ^[[:space:]]*Name:\ ([^[:space:]]+) ]]; then
-    current_name=${BASH_REMATCH[1]}
-    case "$current_state" in
-      RUNNING)
-        running_sinks+=("$current_name")
-        ;;
-      IDLE|UNKNOWN)
-        idle_sinks+=("$current_name")
-        ;;
-      *)
-        other_sinks+=("$current_name")
-        ;;
-    esac
-  fi
-done <<< "$sink_dump"
-
-declare -a target_sinks
-if ((${#running_sinks[@]})); then
-  mapfile -t target_sinks < <(printf '%s\n' "${running_sinks[@]}" | awk '!seen[$0]++')
-elif ((${#idle_sinks[@]})); then
-  target_sinks=("${idle_sinks[0]}")
+if command -v wpctl >/dev/null 2>&1; then
+  TARGET='@DEFAULT_AUDIO_SINK@'
+  case "$action" in
+    up)
+      wpctl set-volume --limit 1.5 "$TARGET" "${STEP}%+"
+      ;;
+    down)
+      wpctl set-volume "$TARGET" "${STEP}%-"
+      ;;
+    mute)
+      wpctl set-mute "$TARGET" toggle
+      ;;
+    *)
+      echo "Usage: $0 {up|down|mute} [step-percent]" >&2
+      exit 1
+      ;;
+  esac
+elif command -v pactl >/dev/null 2>&1; then
+  # Fallback for systems without wpctl: adjust the current default sink
+  DEFAULT_TARGET=$(pactl info | awk -F': ' '/Default Sink/ {print $2}')
+  case "$action" in
+    up)
+      pactl set-sink-volume "$DEFAULT_TARGET" "+${STEP}%"
+      ;;
+    down)
+      pactl set-sink-volume "$DEFAULT_TARGET" "-${STEP}%"
+      ;;
+    mute)
+      pactl set-sink-mute "$DEFAULT_TARGET" toggle
+      ;;
+    *)
+      echo "Usage: $0 {up|down|mute} [step-percent]" >&2
+      exit 1
+      ;;
+  esac
 else
-  target_sinks=("${sink_names[0]}")
+  echo "Neither wpctl nor pactl found. Install PipeWire (wpctl) or pulseaudio-utils (pactl)." >&2
+  exit 1
 fi
-
-default_sink=$(pactl info | awk -F': ' '/^Default Sink: / {print $2; exit}')
-if [[ -n ${target_sinks[0]:-} && $default_sink != "${target_sinks[0]}" ]]; then
-  pactl set-default-sink "${target_sinks[0]}" >/dev/null
-fi
-
-# Replaceable OSD via mako (-r keeps one notification; int:value draws the
-# progress bar styled by mako's progress-color). Never fails the script.
-show_osd() {
-  command -v notify-send >/dev/null 2>&1 || return 0
-  local sink="${target_sinks[0]}"
-  local vol muted
-  # head -1: the Volume line carries one percentage per channel
-  vol=$(pactl get-sink-volume "$sink" 2>/dev/null | grep -m1 -oP '\d+(?=%)' | head -1 || true)
-  muted=$(pactl get-sink-mute "$sink" 2>/dev/null | awk '{print $2}' || true)
-  [[ -z "$vol" ]] && return 0
-  if [[ "$muted" == "yes" ]]; then
-    notify-send -r 9993 -u low -t 1500 "Muted" || true
-  else
-    notify-send -r 9993 -u low -t 1500 -h "int:value:${vol}" "Volume ${vol}%" || true
-  fi
-}
-
-case "${1:-}" in
-  up)
-    for sink in "${target_sinks[@]}"; do
-      pactl set-sink-volume "$sink" "+${STEP}%"
-    done
-    ;;
-  down)
-    for sink in "${target_sinks[@]}"; do
-      pactl set-sink-volume "$sink" "-${STEP}%"
-    done
-    ;;
-  mute)
-    for sink in "${target_sinks[@]}"; do
-      pactl set-sink-mute "$sink" toggle
-    done
-    ;;
-  *)
-    echo "Usage: $0 {up|down|mute} [step-percent]" >&2
-    exit 1
-    ;;
-esac
-
-show_osd

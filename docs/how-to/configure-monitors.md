@@ -1,72 +1,59 @@
-# How to configure monitors
+# Configure monitors
 
-Monitor layout is machine-local. It lives in `~/.config/hypr/monitors.conf`, which the installer
-creates once from `configs/hypr/monitors.conf.example` and then leaves alone - `make apply` never
-overwrites it. Edit that file, not the tracked Hyprland config.
+The Lua desktop reads `~/.config/hypr/monitors.lua`. On a new installation,
+`make apply` creates this file from a generic example and preserves subsequent edits.
 
-## 1. Find your outputs
+## 1. Find connector names
 
-```bash
-hyprctl monitors all | grep -E 'Monitor|description'
-```
-
-This prints each output's name (`eDP-1`, `DP-3`, ...) and its EDID description. Prefer the
-description for external displays: it is stable across reconnects, while names can renumber.
-
-## 2. Edit the layout
-
-Open `~/.config/hypr/monitors.conf`. The default is a single auto-detect line:
-
-```ini
-monitor = ,preferred,auto,1.0
-```
-
-For a laptop with an external display on a dock, key the external display by description with
-`monitorv2` blocks and keep the auto-detect line as a catch-all:
-
-```ini
-monitorv2 {
-    output = desc:Dell Inc. DELL P3421W C7ZQH53
-    mode = preferred
-    position = 0x0
-    scale = 1.0
-}
-
-monitorv2 {
-    output = desc:BOE NE135A1M-NY1
-    mode = 2880x1920@120
-    position = auto-right
-    scale = 1.5
-}
-
-monitor = ,preferred,auto,1.0
-```
-
-To pin workspaces to the external display when docked, add:
-
-```ini
-workspace = 1, monitor:desc:Dell Inc. DELL P3421W C7ZQH53, default:true
-workspace = 2, monitor:desc:Dell Inc. DELL P3421W C7ZQH53
-```
-
-## 3. Apply
-
-Press `Super+Alt+R` (or run `~/.config/scripts/reload.sh`). This reloads Hyprland, restarts
-Waybar, and re-applies the wallpaper.
-
-## Verify
+Run this inside Hyprland:
 
 ```bash
+hyprctl monitors all
+```
+
+Use connector names such as `eDP-1`, `DP-1`, or `HDMI-A-1` in your local file.
+Do not publish monitor descriptions that contain serial numbers.
+
+## 2. Set a layout
+
+Open `~/.config/hypr/monitors.lua`. The default selects each display's preferred
+mode and places it automatically:
+
+```lua
+hl.monitor({ output = "", mode = "preferred", position = "auto", scale = 1.0 })
+```
+
+For a laptop and an external display, replace the connector names and positions
+in this example with your own:
+
+```lua
+hl.monitor({ output = "DP-1", mode = "preferred", position = "0x0", scale = 1.0 })
+hl.monitor({ output = "eDP-1", mode = "preferred", position = "auto-right", scale = 1.0 })
+hl.monitor({ output = "", mode = "preferred", position = "auto", scale = 1.0 })
+```
+
+## 3. Reload and verify
+
+```bash
+hyprctl reload
 hyprctl monitors
 ```
 
-Each connected output should show the mode, position, and scale you configured.
+Check that the mode, scale, and position match the local file.
 
-## Notes
+The AGS display panel can preview a layout and restore it if it is not confirmed.
+Use the local monitor file for the layout you want at login. Closing the laptop
+lid while an external display is connected invokes the clamshell helper. Set
+`INTERNAL_OUTPUT` in the session environment if automatic eDP/LVDS detection
+does not identify your internal display.
 
-- After plugging or unplugging a display, `Super+Ctrl+M` runs the monitor-connect helper
-  (reload + Waybar restart + wallpaper), which fixes a bar or wallpaper stuck on the old layout.
-- Closing the laptop lid with an external display attached moves workspaces to the external
-  display and disables the panel; opening it restores them. This is automatic
-  (`clamshell-mode.sh`). If your internal panel is not `eDP-1`, set
-  `INTERNAL_OUTPUT` or `INTERNAL_OUTPUT_DESC` in the environment that starts Hyprland.
+## Legacy configuration
+
+Sessions using `hyprland.conf` read `~/.config/hypr/monitors.conf`. An upgrade
+keeps this entrypoint active when an existing legacy monitor file has no Lua
+counterpart.
+
+To activate Lua, create `~/.config/hypr/monitors.lua` using the examples above
+and translate your existing display modes, positions, and scales. Then run
+`make apply` from the repository and log out and back in. Check the layout with
+`hyprctl monitors`. The legacy file remains on disk but does not configure Lua.

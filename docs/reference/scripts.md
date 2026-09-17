@@ -1,54 +1,59 @@
 # Scripts
 
-Helper scripts live in `configs/scripts/` and are installed to `~/.config/scripts/`. Everything
-is plain Bash. "Invoked by" is the normal trigger; every script can also be run by hand.
+Desktop helpers are installed from `configs/scripts/` into `~/.config/scripts/`.
 
-## Desktop actions
+## Desktop controls
 
-| Script | Purpose | Invoked by |
+| Script | Purpose | Normal trigger |
 | --- | --- | --- |
-| `power-menu.sh` | Lock / sleep / reboot / shutdown / logout menu | `Super+M`, Waybar power button |
-| `screenshot.sh` | grimblast wrapper: area/output to file and clipboard | `Print` and friends |
-| `screenrecord.sh` | Area recording toggle (wf-recorder), saves to `~/Documents/screenrecordings` | `Super+Shift+R`, `Super+Alt+Print` |
-| `wallpaper-cycle.sh` | next/prev/random/apply wallpaper via awww (swww fallback) | `Super+W` variants, startup |
-| `theme-set.sh` | Atomic theme switch: retargets theme symlinks, reloads Hyprland/Waybar/Mako | `Super+Ctrl+T`, menu |
-| `desktop-menu.sh` | Master menu: apps, capture, style, toggles, system | `Super+Alt+Space` |
-| `keybindings-popup.sh` | Searchable keybind cheatsheet (wofi, kitty pager fallback) | `Super+/`, `Super+F1` |
-| `workspace-rename.sh` | Rename workspaces, overview menu, Waybar tooltip, state persistence | `Super+A`, `Super+Shift+A`, Waybar |
-| `max-fullscreen.sh` | Toggle a window between tiled and monitor-filling floating | manual |
-| `clear-notifications.sh` | Dismiss all Mako notifications | `Super+Ctrl+N` |
-| `calendar-open.sh` / `calendar-tui.sh` | Month/year calendar in a floating Kitty popup | clock click |
-| `wifi-menu.sh` | Wi-Fi network picker with wofi password prompt | network module click |
-| `usb-menu.sh` | Mount/unmount/eject menu for USB drives (udisksctl) | USB module click |
-| `volume-control.sh` | Volume up/down/mute on the active sink, with OSD | volume keys |
+| `ags-shell.sh` | Start, stop, inspect, or toggle the AGS bar and panels | Login, bar helpers |
+| `power-menu.sh` | Lock, sleep, reboot, shutdown, and logout menu | `Super+Alt+P` |
+| `screenshot.sh` | Capture an area or output to a file or clipboard | Print shortcuts |
+| `screenrecord.sh` | Toggle an area recording | `Super+Shift+R`, `Shift+Print` |
+| `wallpaper-cycle.sh` | Select and verify wallpapers through hyprpaper | Wallpaper shortcuts, appearance panel |
+| `theme-set.sh` | Select palette fragments and refresh applications | `Super+Ctrl+T`, appearance panel |
+| `keybindings-popup.sh` | Search the shortcut reference | `Super+/` |
+| `workspace-overview.sh` | Show workspaces and their windows | `Super+Shift+Up` |
+| `workspace-notes.sh` | Manage local workspace notes | `Super+Shift+Space` |
+| `open-calendar.sh` | Open the calendar application | Clock |
+| `wifi-menu.sh` | Open network controls | `Super+Ctrl+I` |
+| `wifi-portal.sh` | Handle captive portal access | Network controls, portal shortcut |
+| `volume-control.sh` | Change volume or mute | Media keys |
+| `clear-notifications.sh` | Dismiss notifications | `Super+Ctrl+N` |
 
-## Waybar feeds
+## Session helpers
 
-| Script | Purpose | Interval |
-| --- | --- | --- |
-| `clock-waybar.sh` | Clock text + month calendar tooltip | 30 s |
-| `system-stats-waybar.sh` | CPU/RAM/temp/disk with warning states | 10 s |
-| `updates-waybar.sh` | Pending pacman update count | 1 h + signal 9 |
-| `usb-monitor.sh` | Connected USB storage indicator | 5 s |
-| `workspace-rename.sh waybar` | Workspace overview tooltip | 5 s + signal 8 |
+| Script | Purpose |
+| --- | --- |
+| `secure-lock.sh` | Clear clipboard state and run hyprlock |
+| `clear-sensitive-state.sh` | Clear clipboard selections and history |
+| `idle-suspend.sh` | Suspend after idle on battery; recheck while on AC |
+| `display-profile.sh` | Preview, confirm, or restore display layouts |
+| `clamshell-mode.sh` | Handle laptop lid changes with external displays |
+| `monitor-hotplug.sh` | React to connected display changes |
+| `monitor-connect.sh` | Refresh desktop display integration |
+| `reload.sh` | Reload the desktop configuration |
+| `waybar-restart.sh` | Manage the Waybar fallback without replacing an active AGS bar |
+| `bluetooth-autoconnect.sh` | Connect devices listed in local preferences |
+| `auto-power-profile.sh` | Select power profiles for AC and battery |
 
-## Session plumbing
+`system-stats-waybar.sh` and `updates-waybar.sh` supply status information to the
+bar. Existing command-line helpers for calendars, USB devices, package snapshots,
+and system health remain available in the same directory.
 
-| Script | Purpose | Invoked by |
-| --- | --- | --- |
-| `clamshell-mode.sh` | Lid open/close handling for docked laptops | lid switch binds + watch loop |
-| `monitor-connect.sh` | Reload + Waybar restart + wallpaper after display changes | `Super+Ctrl+M` |
-| `reload.sh` | Reload Hyprland and restart Waybar | `Super+Alt+R` |
-| `waybar-restart.sh` | Serialized Waybar restart through `waybar.service`, with an unmanaged fallback | startup, other scripts |
-| `bluetooth-autoconnect.sh` | Reconnect trusted devices, promote audio sinks | user service |
-| `idle-lock.sh` | Idle lock that skips while an external monitor is attached | hypridle (5 min) |
-| `auto-power-profile.sh` | Performance on AC, power-saver on battery | udev rule |
-| `welcome.sh` | Terminal banner: fastfetch + cached weather | every new shell |
+## AGS commands
 
-## Maintenance
+Run these inside the desktop session:
 
-| Script | Purpose | Invoked by |
-| --- | --- | --- |
-| `cache-cleanup.sh` | Clear browser/Electron/thumbnail caches | weekly user timer, `cleanup` |
-| `system-health.sh` | Failed services, disk, journal, orphans, updates report | `health` |
-| `package-snapshot.sh` | Drift report: installed packages vs manifests | manual, from the checkout |
+```bash
+~/.config/scripts/ags-shell.sh status
+~/.config/scripts/ags-shell.sh toggle network
+~/.config/scripts/ags-shell.sh toggle sound
+~/.config/scripts/ags-shell.sh toggle desktop
+~/.config/scripts/ags-shell.sh toggle appearance
+~/.config/scripts/ags-shell.sh toggle notifications
+~/.config/scripts/ags-shell.sh toggle system
+```
+
+`status` prints `running`, `starting`, or `stopped`. `stop` restores the supervised
+Waybar fallback; `login` starts with the fallback visible until AGS is ready.

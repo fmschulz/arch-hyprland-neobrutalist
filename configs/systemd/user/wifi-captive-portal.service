@@ -1,0 +1,11 @@
+[Unit]
+Description=Auto-open captive portal login for Wi-Fi networks
+After=network.target
+
+[Service]
+ExecStart=%h/.config/scripts/wifi-portal.sh monitor
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=default.target

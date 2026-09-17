@@ -1,35 +1,36 @@
 # arch-hyprland-neobrutalist
 
-A reproducible Arch Linux + Hyprland desktop with a neo-brutalist visual system: square corners,
-thick black borders, a loud yellow/mint/pink palette, and monospace typography across the bar,
-launcher, terminal, lock screen, and login manager.
+An Arch Linux desktop based on the Framework 12 setup, with square corners,
+black borders, eight accent palettes, and monospace text.
 
-![Desktop showcase](https://raw.githubusercontent.com/fmschulz/arch-hyprland-neobrutalist/main/assets/screenshots/v0.1.0-desktop.png)
+Hyprland loads modular Lua configuration. An AGS 3 bar provides controls for
+Wi-Fi, audio, displays, appearance, notifications, and power; Waybar is the
+fallback. The desktop also includes Wofi, Mako, Kitty, hyprlock, hypridle,
+hyprpaper, and an optional greetd/regreet login screen.
 
-The repo tracks the complete desktop: Hyprland (modular config), Waybar, Wofi, Mako, Kitty, Yazi,
-Neovim, hyprlock/hypridle/hyprsunset, greetd/regreet, package manifests, helper scripts, and the
-install/apply/doctor tooling that puts it all in place. Machine-specific values (monitors,
-Bluetooth devices, weather location) live in local override files that installs create once and
-never overwrite.
+The public configuration uses generic monitor defaults. Device identifiers,
+credentials, network profiles, workspace notes, and runtime state are not part
+of the distribution.
 
-## Quick start
+## Install
 
-On a working Arch install with a sudo-capable user:
+Start from an up-to-date x86-64 Arch installation with a user that can run `sudo`:
 
 ```bash
 sudo pacman -S --needed git make
 git clone https://github.com/fmschulz/arch-hyprland-neobrutalist.git
 cd arch-hyprland-neobrutalist
 make install
+make doctor
 ```
 
-The [installation tutorial](tutorials/getting-started.md) walks through this end to end,
-including verification and first steps inside the desktop.
+The [installation tutorial](tutorials/getting-started.md) covers first login and
+verification. The configuration is checked with Hyprland 0.56.2 and AGS 3.1.2.
 
-## Finding your way
+## Guides
 
-- **[Tutorials](tutorials/index.md)** - learning-oriented lessons. Start here if you are new.
-- **[How-to guides](how-to/index.md)** - task-oriented recipes: monitors, local overrides,
-  the login screen, package maintenance.
-- **[Reference](reference/index.md)** - keybinds, make targets, script inventory, repo layout.
-- **[Explanation](explanation/index.md)** - the design system and how the pieces fit together.
+- [Tutorials](tutorials/index.md): install and start the desktop.
+- [How-to guides](how-to/index.md): configure monitors, themes, local settings,
+  and the login screen.
+- [Reference](reference/index.md): shortcuts, commands, and scripts.
+- [Explanation](explanation/index.md): architecture and visual design.

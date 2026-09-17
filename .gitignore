@@ -2,9 +2,32 @@
 *.swo
 *~
 .DS_Store
+.env
+.env.*
+!.env.example
+!*.env.example
+.secrets/
+.ssh/
+*.pem
+*.key
 configs/arch-hypr-neobrutalist/bluetooth-devices.conf
 configs/arch-hypr-neobrutalist/welcome.conf
 configs/hypr/workspace-names.json
+configs/hypr/monitors.conf
+configs/hypr/monitors.lua
+
+# Generated desktop build and runtime state
+configs/ags/node_modules/
+configs/ags/.types/
+configs/ags/dist/
+configs/**/.cache/
+configs/**/cache/
+configs/**/*.log
+configs/**/*.pid
+configs/**/*.state
+configs/**/*.env
+configs/**/*.secret
+configs/**/*.secrets
 
 # MkDocs build output
 site/

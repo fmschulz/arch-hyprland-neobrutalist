@@ -3,21 +3,35 @@
 
 set -euo pipefail
 
-updates=0
+update_output=""
+check_status=127
 if command -v checkupdates >/dev/null 2>&1; then
-	# checkupdates exits 2 when there are no updates (and 1 on error); without
-	# the || true, set -e would kill the script before it prints any JSON.
-	updates=$(checkupdates 2>/dev/null | wc -l) || true
+	if update_output=$(checkupdates 2>/dev/null); then
+		check_status=0
+	else
+		check_status=$?
+	fi
 fi
 
-if ((updates > 0)); then
-	text="󰏗 ${updates}"
-	tooltip="${updates} package updates available"
-	class="pending"
-else
+if ((check_status == 0)); then
+	updates=$(awk 'NF { updates++ } END { print updates + 0 }' <<<"${update_output}")
+	if ((updates > 0)); then
+		text="󰏗 ${updates}"
+		tooltip="${updates} package updates available"
+		class="pending"
+	else
+		text=""
+		tooltip="System up to date"
+		class="none"
+	fi
+elif ((check_status == 2)); then
 	text=""
 	tooltip="System up to date"
 	class="none"
+else
+	text="󰏗 ?"
+	tooltip="Package update check failed"
+	class="error"
 fi
 
 jq -nc --arg text "${text}" --arg tooltip "${tooltip}" --arg class "${class}" \

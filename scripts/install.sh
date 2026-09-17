@@ -85,6 +85,7 @@ if $PACKAGES_ONLY && $CONFIGS_ONLY; then
 fi
 
 [[ -f /etc/arch-release ]] || die "This installer is intended for Arch Linux"
+(( EUID != 0 )) || die "Run this installer as your regular user; it uses sudo when needed"
 
 if ! $CONFIGS_ONLY; then
   log "Installing bootstrap dependencies"
@@ -101,6 +102,11 @@ if ! $CONFIGS_ONLY; then
     install_aur_file "$ROOT/packages/aur.txt"
   fi
 
+  if ! $PACKAGES_ONLY; then
+    log "Ensuring pinned AGS runtime"
+    "$ROOT/scripts/install-ags.sh"
+  fi
+
   log "Enabling base services"
   sudo systemctl enable --now NetworkManager.service 2>/dev/null || true
   sudo systemctl enable --now bluetooth.service 2>/dev/null || true
@@ -114,7 +120,7 @@ if ! $PACKAGES_ONLY && ! $SKIP_SYSTEM; then
   log "Applying system-level tuning"
   sudo "$ROOT/scripts/system/configure-system-performance.sh" "${USER}"
   if [[ "$WITH_GREETD" == "1" ]]; then
-    sudo "$ROOT/scripts/system/configure-regreet.sh" "${USER}"
+    sudo "$ROOT/scripts/system/configure-regreet.sh" --user "${USER}"
   fi
 fi
 

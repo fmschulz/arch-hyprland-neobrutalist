@@ -10,7 +10,7 @@ help:
 		'  make full-install  Install everything plus greetd/regreet setup' \
 		'  make packages      Install package manifests only' \
 		'  make apply         Sync repo configs into ~/.config and ~/Pictures' \
-		'  make update        Pull, apply (runs pending migrations), and doctor' \
+		'  make update        Pull, install requirements, apply, and doctor' \
 		'  make doctor        Check that the setup is wired correctly' \
 		'  make system        Re-run system tuning' \
 		'  make greetd        Configure greetd/regreet as the login manager'
@@ -29,7 +29,7 @@ apply:
 
 update:
 	git pull --rebase --autostash
-	./scripts/apply.sh
+	./scripts/install.sh --skip-system
 	./scripts/doctor.sh
 
 doctor:
@@ -39,4 +39,4 @@ system:
 	sudo ./scripts/system/configure-system-performance.sh "$${USER}"
 
 greetd:
-	sudo ./scripts/system/configure-regreet.sh "$${USER}"
+	sudo ./scripts/system/configure-regreet.sh --install --user "$${USER}"

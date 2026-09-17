@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Show Hyprland keybindings in a scrollable popup (yad/zenity, else a kitty pager)
+# Show Hyprland keybindings in a scrollable popup (yad/zenity fallback to less)
 # Keep this in sync with ~/.config/hypr/conf.d/50-binds.conf and 60-submaps.conf.
 
 set -euo pipefail
@@ -16,27 +16,30 @@ render_section() {
 }
 
 build_keybindings_text() {
-  local launch window sizing nav workspaces monitors screenshots media wallpapers kitty mouse
+  local launch window sizing nav workspaces monitors screenshots media themes kitty mouse
 
   launch="$(cat <<'EOF'
 Super + Return|Open terminal (Kitty)
 Super + E|File manager (yazi in Kitty)
 Super + D|Application launcher (Wofi)
-Super + Alt + Space|Desktop menu (apps, capture, style, system)
-Super + Shift + M|Music: bester-ytm (YouTube Music TUI)
-Super + / or Super + F1|Show this keybindings cheatsheet
+Super + / or F1|Show this keybindings cheatsheet
 Super + C|Clipboard history
-Super + L|Lock screen
-Super + M|Power menu
-Super + Alt + P|Power menu (wlogout)
+Super + ;|Emoji picker
+Super + Shift + P|Color picker (hex -> clipboard)
+Super + Ctrl + I|Wi-Fi menu
+Super + Ctrl + Shift + I|Wi-Fi login page
+Super + L  /  Super + Alt + L|Lock screen
+Super + Alt + P|Power menu
 Super + Alt + R|Reload Hyprland config
 Super + Ctrl + N|Clear notifications
+Super + M|Exit Hyprland
 EOF
 )"
 
   window="$(cat <<'EOF'
 Super + Q|Close active window
-Super + V|Toggle floating
+Super + Shift + V|Toggle floating
+Super + V|Move mode (arrows or h/j/k/l)
 Super + R|Resize mode (arrows or h/j/k/l)
 Super + P|Toggle pseudo-tiling
 Super + J|Toggle split direction
@@ -44,7 +47,7 @@ Super + F|Toggle fullscreen
 Super + G|Toggle group (tabbed stack)
 Super + Ctrl + G|Cycle window within group
 Super + Shift + Alt + G|Lock active group
-Super + `|Toggle scratchpad
+Super + `|Toggle scratchpad terminal
 Super + Shift + `|Send window to scratchpad
 EOF
 )"
@@ -52,14 +55,13 @@ EOF
   sizing="$(cat <<'EOF'
 Super + Shift + H|Halve width
 Super + Ctrl + H|Double width
-Super + Shift + V|Halve height
-Super + Ctrl + V|Double height
 Super + Shift + C|Center floating window
 EOF
 )"
 
   nav="$(cat <<'EOF'
-Super + Alt + arrows|Focus window (left/right/up/down)
+Alt + Shift + arrows|Focus window (left/right/up/down)
+Super + Alt + arrows|Nudge floating window
 Super + Shift + Alt + arrows|Swap window with neighbor
 EOF
 )"
@@ -71,9 +73,10 @@ Super + 1-9,0|Switch to workspace 1-10
 Super + Shift + Left/Right|Move window to previous/next workspace
 Super + Shift + 1-9,0|Move window to workspace 1-10
 Super + S|Toggle special workspace
-Super + Shift + S|Move window to special workspace
-Super + A|Rename current workspace
-Super + Shift + A|Workspace overview
+Super + Ctrl + S|Move window to special workspace
+Super + Shift + Up|Workspace overview
+Super + Shift + Space|Workspace notes menu
+Super + Shift + N|Workspace notes menu
 EOF
 )"
 
@@ -91,24 +94,28 @@ Super + Print|Full screen -> clipboard
 Super + Shift + Print|Region -> ~/Documents/screenshots + clipboard
 Super + Ctrl + Print|Full screen -> ~/Documents/screenshots
 Super + Shift + F12|Region -> ~/Documents/screenshots + clipboard
-Shift + Print|Region -> ~/Documents/screenshots + clipboard
-Super + Shift + R / Super + Alt + Print|Toggle area recording -> ~/Documents/screenrecordings
+Super + Alt + S|Region -> ~/Documents/screenshots + clipboard
+Ctrl + Alt + S|Region -> ~/Documents/screenshots + clipboard
+Super + Shift + S|Region (camera-key shortcut)
+Shift + Print|Area recording toggle -> ~/Documents/screenrecordings
+Super + Shift + R|Area recording toggle -> ~/Documents/screenrecordings
 EOF
 )"
 
   media="$(cat <<'EOF'
-Volume Up/Down/Mute|Output volume
+Volume Up/Down/Mute|Output volume (with OSD)
 Mic Mute|Toggle microphone
-Play/Pause / Next / Prev|Media playback (playerctl)
-Brightness Up/Down|Screen brightness
+Brightness Up/Down|Screen brightness (with OSD)
+Play/Pause|Play/pause media (playerctl)
+Next/Previous|Next/previous track (playerctl)
 EOF
 )"
 
-  wallpapers="$(cat <<'EOF'
+  themes="$(cat <<'EOF'
 Super + W|Next wallpaper
 Super + Shift + W|Previous wallpaper
 Super + Ctrl + W|Random wallpaper
-Super + Ctrl + T|Next theme (bar, borders, launcher, terminal)
+Super + Ctrl + T|Cycle desktop theme (8 themes)
 EOF
 )"
 
@@ -142,7 +149,7 @@ EOF
     render_section "Monitors" "$monitors"
     render_section "Screenshots & recording" "$screenshots"
     render_section "Media & brightness" "$media"
-    render_section "Wallpapers" "$wallpapers"
+    render_section "Wallpapers & themes" "$themes"
     render_section "Kitty tabs & themes" "$kitty"
     render_section "Mouse & touchpad" "$mouse"
   }
@@ -165,7 +172,7 @@ show_with_wofi() {
   printf '%s\n' "$1" \
     | sed -e '/^[[:space:]]*$/d' -e '/^-\{2,\}$/d' -e '/^=\{2,\}$/d' -e '/^HYPRLAND KEYBINDINGS$/d' \
     | wofi --dmenu --prompt "Keybindings (type to filter, Esc closes)" \
-        --width 980 --height 670 --cache-file /dev/null --insensitive >/dev/null \
+        --width 980 --height 640 --cache-file /dev/null --insensitive >/dev/null \
     || true
 }
 
@@ -177,6 +184,7 @@ show_with_kitty() {
   # Pager fallback chain: an unguarded "less" makes the kitty window die
   # instantly ("command not found") and the popup just flashes when less is
   # not installed. more (util-linux) pages from the top; cat+read is last resort.
+  # shellcheck disable=SC2016 # $1 belongs to the inner shell.
   kitty --class keybindings-popup --title "Hyprland Keybindings" \
     sh -c 'if command -v less >/dev/null 2>&1; then less -R "$1";
            elif command -v more >/dev/null 2>&1; then more "$1"; printf "\n[Enter to close] "; read -r _;
@@ -192,9 +200,10 @@ main() {
   if [[ ! -t 1 ]]; then
     show_with_wofi "$payload" && exit 0
     show_with_kitty "$payload" && exit 0
-    show_with_yad "$payload" && exit 0
-    show_with_zenity "$payload" && exit 0
   fi
+
+  show_with_yad "$payload" && exit 0
+  show_with_zenity "$payload" && exit 0
 
   if command -v less >/dev/null 2>&1; then
     printf '%s\n' "$payload" | less -R

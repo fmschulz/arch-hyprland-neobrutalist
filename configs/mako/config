@@ -61,9 +61,5 @@ text-color=#FFFFFF
 border-color=#000000
 default-timeout=3000
 
-# Silence Chromium/YouTube ads
-[app-name=chromium summary~="[Yy]ou[Tt]ube"]
-default-timeout=1
-
-[app-name=chromium summary~="[Aa]d"]
-default-timeout=1
+[mode=do-not-disturb]
+invisible=1

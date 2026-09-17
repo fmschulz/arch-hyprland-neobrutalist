@@ -1,71 +1,78 @@
-# Core Keybinds
+# Core keybinds
 
-The binds below mirror `configs/hypr/conf.d/50-binds.conf`. `Super` is the
-mod key. A full in-desktop cheatsheet is available at runtime with `Super+/`.
+These shortcuts follow `configs/hypr/conf.d/50-binds.lua`. `Super` is the logo
+key. Press `Super+/` for the desktop cheatsheet.
 
-## Launchers
+## Applications and panels
 
-- `Super+Return` terminal (Kitty)
-- `Super+D` app launcher (Wofi)
-- `Super+Alt+Space` desktop menu (apps, capture, style, toggles, system)
-- `Super+E` Yazi file manager in Kitty
-- `Super+Shift+M` bester-ytm (YouTube Music TUI)
-- `Super+C` clipboard history (cliphist via Wofi)
-- `Super+/` or `Super+F1` keybinding cheatsheet
+| Shortcut | Action |
+| --- | --- |
+| `Super+Return` | Kitty terminal |
+| `Super+D` | Wofi application launcher |
+| `Super+E` | Yazi in Kitty |
+| `Super+/`, `Super+F1`, or `F1` | Keybinding cheatsheet |
+| `Super+Ctrl+I` | Wi-Fi controls |
+| `Super+Ctrl+Shift+I` | Captive portal helper |
+| `Super+C` | Clipboard history |
+| `Super+grave` | Scratchpad terminal |
+| `Super+Shift+grave` | Move window to scratchpad |
 
-## Window Management
+Click the AGS bar modules to open audio, display, appearance, notification, and
+system controls.
 
-- `Super+Q` close window
-- `Super+F` fullscreen
-- `Super+V` toggle floating
-- `Super+P` pseudo-tile
-- `Super+J` toggle split direction
-- `Super+G` toggle group (tabbed stack) · `Super+Ctrl+G` cycle group · `Super+Shift+Alt+G` lock group
-- `Super+R` resize submap (arrows / `hjkl`; `Esc`, `Return`, or `Super+R` to exit)
-- `Super+Shift+H/V` · `Super+Ctrl+H/V` step-resize · `Super+Shift+C` center
-- `Super+Alt+Arrows` move focus
-- `Super+Shift+Alt+Arrows` swap window
+## Windows
 
-## Workspace Flow
+| Shortcut | Action |
+| --- | --- |
+| `Super+Q` | Close window |
+| `Super+F` | Fullscreen |
+| `Super+V` | Move mode; arrows or `hjkl` move the window |
+| `Super+Shift+V` | Toggle floating |
+| `Super+R` | Resize mode; arrows or `hjkl` resize |
+| `Esc` or `Return` | Leave move or resize mode |
+| `Super+P` | Toggle pseudo-tiling |
+| `Super+J` | Toggle split direction |
+| `Super+Shift+H` / `Super+Ctrl+H` | Reduce / increase width |
+| `Super+Shift+C` | Center floating window |
+| `Alt+Shift+Arrows` | Move focus |
+| `Super+Alt+Arrows` | Nudge window |
+| `Super+Shift+Alt+Arrows` | Swap windows |
+| `Super+G` / `Super+Ctrl+G` | Toggle / cycle group |
+| `Super+Shift+Alt+G` | Toggle group lock |
+| `Super+left mouse drag` | Move window |
+| `Super+right mouse drag` | Resize window |
 
-- `Super+1..0` switch workspace · `Super+Shift+1..0` move window to workspace
-- `Super+Left` / `Super+Right` adjacent workspace · `Super+Tab` previous workspace
-- `Super+S` special workspace · `Super+grave` scratch · `Super+Shift+grave` send to scratch
-- `Super+A` rename current workspace · `Super+Shift+A` workspace overview
-- `ws <number> [name]` rename a workspace from the shell
+## Workspaces and displays
 
-## Monitors
+| Shortcut | Action |
+| --- | --- |
+| `Super+1..0` | Select workspace 1 through 10 |
+| `Super+Shift+1..0` | Move window to workspace |
+| `Super+Left` / `Super+Right` | Adjacent workspace |
+| `Super+Tab` | Previous workspace |
+| `Super+S` | Toggle special workspace |
+| `Super+Shift+Up` | Workspace overview |
+| `Super+Shift+Space` or `Super+Shift+N` | Workspace notes menu |
+| `Super+period` / `Super+comma` | Move window to next / previous monitor |
+| `Super+Shift+period` / `Super+Shift+comma` | Move workspace between monitors |
+| `Super+Ctrl+period` / `Super+Ctrl+comma` | Focus right / left monitor |
+| `Super+Ctrl+M` | Monitor connection helper |
 
-- `Super+period` / `Super+comma` move window to next/previous monitor
-- `Super+Shift+period` / `Super+Shift+comma` move workspace to next/previous monitor
-- `Super+Ctrl+period` / `Super+Ctrl+comma` focus next/previous monitor
-- `Super+Ctrl+M` monitor connect helper
+## Capture and desktop actions
 
-## Screenshots & Recording
+| Shortcut | Action |
+| --- | --- |
+| `Print` or `Super+Shift+Print` | Save selected area and copy it |
+| `Super+Print` | Copy focused output |
+| `Super+Ctrl+Print` | Save focused output |
+| `Super+Shift+F12`, `Super+Alt+S`, `Super+Shift+S`, or `Ctrl+Alt+S` | Save selected area |
+| `Shift+Print` or `Super+Shift+R` | Toggle area recording |
+| `Super+W` / `Super+Shift+W` / `Super+Ctrl+W` | Next / previous / random wallpaper |
+| `Super+Ctrl+T` | Next accent palette |
+| `Super+L` or `Super+Alt+L` | Clear sensitive clipboard state and lock |
+| `Super+Alt+P` | Power menu |
+| `Super+M` | Exit the Hyprland session |
+| `Super+Alt+R` | Reload desktop configuration |
+| `Super+Ctrl+N` | Clear notifications |
 
-- `Print` region -> `~/Documents/screenshots` + clipboard
-- `Super+Print` copy focused output to clipboard
-- `Super+Ctrl+Print` full output -> `~/Documents/screenshots`
-- `Super+Shift+Print` / `Super+Shift+F12` / `Shift+Print` region -> file + clipboard
-- `Super+Shift+R` / `Super+Alt+Print` toggle area screen recording -> `~/Documents/screenrecordings`
-
-## Desktop Actions
-
-- `Super+W` next wallpaper · `Super+Shift+W` previous · `Super+Ctrl+W` random
-- `Super+Ctrl+T` next theme (bar, borders, launcher, notifications, terminal)
-- `Super+L` lock screen · `Super+Alt+P` logout menu · `Super+M` power menu
-- `Super+Alt+R` reload Hyprland/Waybar · `Super+Ctrl+N` clear notifications
-
-## Media & Brightness
-
-- `XF86AudioRaiseVolume` / `LowerVolume` / `Mute` volume control
-- `XF86AudioMicMute` toggle mic mute
-- `XF86AudioPlay` / `Pause` / `Next` / `Prev` media playback (playerctl)
-- `XF86MonBrightnessUp` / `Down` backlight
-
-## Terminal Shortcuts
-
-- `yy` open Yazi and `cd` into the selected directory on exit
-- `ytm` open bester-ytm (YouTube Music TUI)
-- `health` run the local system health script
-- `cleanup` run the cache cleanup script
+Volume, microphone mute, brightness, and media keys use their labeled actions.

@@ -1,0 +1,4 @@
+-- Copy-once local monitor profile.
+-- Installed to ~/.config/hypr/monitors.lua and preserved across later applies.
+-- The default lets Hyprland select the preferred mode for every output.
+hl.monitor({ output = "", mode = "preferred", position = "auto", scale = 1.0 })

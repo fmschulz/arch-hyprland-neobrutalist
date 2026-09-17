@@ -4,62 +4,74 @@
 
 | Target | Effect |
 | --- | --- |
-| `make install` | Packages + configs + system tuning (`scripts/install.sh`) |
-| `make full-install` | `make install` plus greetd/regreet setup |
-| `make packages` | Install the package manifests only |
-| `make apply` | Sync repo configs into `~/.config` and `~/Pictures` |
-| `make update` | `git pull`, apply (runs pending migrations), doctor |
-| `make doctor` | Check that the setup is wired correctly |
-| `make system` | Re-run system tuning (sysctl, journal, paccache, power profile) |
-| `make greetd` | Configure greetd/regreet as the login manager |
+| `make install` | Install packages, prepare the AGS runtime, apply configs, and tune the system |
+| `make full-install` | Install the desktop and configure greetd/regreet |
+| `make packages` | Install package manifests |
+| `make apply` | Merge configuration into `~/.config` and wallpapers into `~/Pictures/wallpapers` |
+| `make update` | Pull, install required packages and runtime, apply configuration, then run doctor |
+| `make doctor` | Check commands, configuration, and the AGS runtime |
+| `make system` | Apply system tuning |
+| `make greetd` | Install the themed login manager |
 
-## `scripts/install.sh` options
+## Installer flags
 
 | Flag | Effect |
 | --- | --- |
-| `--packages-only` | Install pacman/AUR packages, skip configs and system tuning |
-| `--configs-only` | Apply configs only, skip packages |
-| `--skip-aur` | Skip AUR bootstrap and `aur.txt` |
+| `--packages-only` | Install packages without applying configuration or system tuning |
+| `--configs-only` | Apply configuration without installing packages |
+| `--skip-aur` | Skip the AUR helper and package manifest |
 | `--skip-system` | Skip root-level system tuning |
-| `--with-greetd` | Also configure greetd/regreet (same as `WITH_GREETD=1`) |
+| `--with-greetd` | Configure greetd/regreet |
 
-## What `make apply` does
+## Apply behavior
 
-`scripts/apply.sh` is idempotent and safe to rerun at any time:
+`scripts/apply.sh` merges tracked configuration without deleting local files.
+It copies the monitor templates only when their local counterparts are missing,
+initializes theme links, marks desktop helpers executable, adds the Bash source
+line, runs pending migrations, and enables the configured user services.
 
-1. rsyncs each `configs/<name>/` directory into `~/.config/<name>/` (existing extra files in
-   those directories are left in place; nothing is deleted),
-2. syncs wallpapers into `~/Pictures/wallpapers/`,
-3. installs the copy-once local `monitors.conf` only when missing,
-4. marks `~/.config/scripts/*` executable,
-5. hooks `~/.config/bash/bashrc` into `~/.bashrc` (once),
-6. runs pending one-shot migrations from `migrations/` (each runs once per machine;
-   applied names are recorded in
-   `~/.local/state/arch-hypr-neobrutalist/migrations-applied`, and a failing migration
-   retries on the next apply),
-7. creates the theme symlinks with the yellow default when missing,
-8. enables user services: pipewire stack, `cache-cleanup.timer`, `ssh-agent.service`, and
-   `bluetooth-autoconnect.service` when a device list exists,
-9. syncs Yazi plugins (`ya pkg install`) and refreshes tldr in the background.
+An existing legacy installation keeps using `hyprland.conf` until a local
+`monitors.lua` exists, preserving its custom monitor layout.
+See [monitor migration](../how-to/configure-monitors.md#legacy-configuration).
 
-## What `make doctor` checks
+AGS dependencies, generated type declarations, and build output are excluded
+from the configuration copy. `make apply` does not build the AGS runtime; the
+installer handles that step. Machines managed through a controlcenter checkout
+must use that checkout's deployer instead.
 
-`scripts/doctor.sh` verifies required commands on `PATH` (Hyprland, kitty, waybar, mako, wofi,
-grimblast, wf-recorder, hyprlock, hypridle, ...), a wallpaper backend (`awww` or `swww`), the
-presence of key installed configs (including `~/.config/hypr/hypridle.conf` and
-`monitors.conf`), the bashrc hook, and workspace-name state preservation. Exit status is `0`
-when every check passes.
+## AGS runtime and development
 
-## Manifest format
+The pinned runtime is installed under
+`~/.local/share/arch-hypr-neobrutalist/ags`. To prepare it directly:
 
-`packages/pacman.txt`, `packages/pacman-amd.txt`, and `packages/aur.txt` contain one package
-name per line. Blank lines are ignored; `#` starts a comment, either on its own line or after
-a package name:
-
-```text
-hyprland
-grim        # screenshots
-# section header comments are fine too
+```bash
+./scripts/install-ags.sh
 ```
 
-`pacman-amd.txt` is applied only when `lspci` reports an AMD/Radeon GPU.
+After it is installed, validate the AGS sources from the repository root:
+
+```bash
+cd configs/ags
+npm ci
+npm run types
+npm run check
+. "$HOME/.local/share/arch-hypr-neobrutalist/ags/env.sh"
+npm run build
+```
+
+The typecheck should exit without diagnostics; the build writes a bundle
+under `dist/`. The desktop starts from the TypeScript source. The generated files
+and `node_modules` are ignored by Git.
+
+`AGS_RUNTIME_ENV` can select a different runtime environment file for isolated
+checks. Load that same environment before running the AGS build command.
+
+## Doctor and package manifests
+
+`make doctor` checks installed commands, the active configuration and theme,
+wallpaper integration, the Bash source line, and the AGS runtime. It reports
+missing requirements and returns a nonzero exit status if any check fails.
+
+Manifests contain one package name per line. Blank lines and `#` comments are
+ignored. `packages/pacman-amd.txt` is installed only when the system reports an
+AMD/Radeon GPU.

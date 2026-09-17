@@ -1,19 +1,23 @@
 #!/bin/bash
 # Monitor connection script for Hyprland
 
-set -euo pipefail
+# Get available monitors
+monitors=$(hyprctl monitors | grep "Monitor" | awk '{print $2}')
+
+echo "Available monitors:"
+echo "$monitors"
 
 # Auto-configure monitors
-hyprctl reload || true
+hyprctl reload
 
-# Restart waybar to fix duplication issues
-if [[ -x ~/.config/scripts/waybar-restart.sh ]]; then
-	~/.config/scripts/waybar-restart.sh || true
+# Re-apply current wallpaper on all monitors
+if [ -x "$HOME/.config/scripts/wallpaper-cycle.sh" ]; then
+  "$HOME/.config/scripts/wallpaper-cycle.sh" apply >/dev/null 2>&1 || true
+elif command -v swww >/dev/null 2>&1; then
+  fallback_wallpaper=$(find "${WALLPAPER_DIR:-$HOME/Pictures/wallpapers}" -maxdepth 1 -type f \( -iname '*.png' -o -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.webp' \) | sort | head -n 1)
+  if [ -n "$fallback_wallpaper" ]; then
+    swww img "$fallback_wallpaper" >/dev/null 2>&1 || true
+  fi
 fi
 
-# Re-apply the configured wallpaper after the monitor layout changes
-if [[ -x ~/.config/scripts/wallpaper-cycle.sh ]]; then
-	~/.config/scripts/wallpaper-cycle.sh apply >/dev/null 2>&1 || true
-fi
-
-notify-send "Monitors reconfigured" 2>/dev/null || true
+echo "Monitor configuration updated!"

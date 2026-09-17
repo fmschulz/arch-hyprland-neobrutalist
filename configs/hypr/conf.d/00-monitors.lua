@@ -1,0 +1,3 @@
+-- Monitor layout is local to each machine and is installed once from the
+-- tracked catch-all example.
+require("monitors")

@@ -40,7 +40,9 @@ set_theme() {
   local dir="$THEMES_DIR/$name"
   [[ -d "$dir" ]] || die "unknown theme: $name (see theme-set.sh list)"
 
+  # Keep the legacy link until sessions started with hyprland.conf have ended.
   ln -sfn "$dir/hyprland.conf" "$CONFIG/hypr/theme.conf"
+  ln -sfn "$dir/hyprland.lua" "$CONFIG/hypr/theme.lua"
   ln -sfn "$dir/waybar.css" "$CONFIG/waybar/theme.css"
   ln -sfn "$dir/wofi.css" "$CONFIG/wofi/theme.css"
   ln -sfn "$dir/mako.conf" "$CONFIG/mako/theme"

@@ -1,0 +1,23 @@
+-- Startup-only commands
+hl.on("hyprland.start", function()
+    hl.exec_cmd("systemctl --user import-environment DISPLAY WAYLAND_DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_TYPE")
+    hl.exec_cmd("dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_TYPE")
+    hl.exec_cmd("~/.config/scripts/ags-shell.sh login")
+    hl.exec_cmd("mako")
+    hl.exec_cmd([[sh -lc 'systemctl --user start hyprpolkitagent.service 2>/dev/null; sleep 0.3; systemctl --user is-active --quiet hyprpolkitagent.service || exec /usr/lib/hyprpolkitagent/hyprpolkitagent']])
+    hl.exec_cmd("wl-paste --type text --watch cliphist store")
+    hl.exec_cmd("wl-paste --type image --watch cliphist store")
+    hl.exec_cmd([[sh -lc 'command -v swayosd-server >/dev/null 2>&1 && exec swayosd-server']])
+    hl.exec_cmd([[sh -lc 'command -v wlsunset >/dev/null 2>&1 && exec wlsunset -t 3500 -T 6500 -S 07:00 -s 20:00']])
+    hl.exec_cmd("~/.config/scripts/bluetooth-autoconnect.sh")
+    hl.exec_cmd("~/.config/scripts/clamshell-mode.sh init")
+    hl.exec_cmd("~/.config/scripts/wallpaper-cycle.sh apply")
+    hl.exec_cmd("~/.config/scripts/monitor-hotplug.sh")
+    hl.exec_cmd("hypridle")
+    hl.exec_cmd("[workspace special:scratch silent] kitty --class scratch")
+end)
+
+-- Re-apply clamshell state after initial config and every reload.
+hl.on("config.reloaded", function()
+    hl.exec_cmd("~/.config/scripts/clamshell-mode.sh sync")
+end)

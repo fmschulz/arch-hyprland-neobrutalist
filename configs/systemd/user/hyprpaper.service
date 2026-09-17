@@ -1,0 +1,9 @@
+[Unit]
+Description=Hyprland wallpaper daemon
+ConditionEnvironment=WAYLAND_DISPLAY
+ConditionEnvironment=HYPRLAND_INSTANCE_SIGNATURE
+
+[Service]
+ExecStart=/usr/bin/hyprpaper -c %h/.config/hypr/hyprpaper.conf
+Restart=on-failure
+RestartSec=1

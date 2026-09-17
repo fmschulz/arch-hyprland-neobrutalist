@@ -1,47 +1,40 @@
-# How to switch themes
+# Switch themes
 
-The desktop ships eight accent themes: yellow (default), blue, purple, green, orange,
-black, darkgrey, and white. A theme recolors the Waybar background, active window border,
-Wofi surfaces, Mako notifications, the hyprlock input field, and the Kitty palette in one
-switch — the black borders, white module fields, and geometry stay fixed.
+The desktop includes yellow, blue, purple, green, orange, black, darkgrey, and
+white palettes. The palette changes the AGS and Waybar accents, window borders,
+launcher, notifications, and terminal colors.
 
-## Cycle or pick
+## Choose a palette
 
-- `Super+Ctrl+T` cycles to the next theme.
-- `Super+Alt+Space` → Style → "Theme: pick" chooses one by name.
-- From a shell:
-
-  ```bash
-  ~/.config/scripts/theme-set.sh list
-  ~/.config/scripts/theme-set.sh blue
-  ```
-
-The switch is atomic and persists across reboots. Open Kitty windows keep their palette
-until restyled (`Ctrl+Alt+<n>`) — new windows pick up the theme automatically.
-
-## Verify
+Use the AGS appearance panel, press `Super+Ctrl+T` to cycle, or run:
 
 ```bash
+~/.config/scripts/theme-set.sh list
+~/.config/scripts/theme-set.sh blue
 ~/.config/scripts/theme-set.sh current
 ```
 
-## How it works
+The last command prints `blue`. New Kitty windows use the selected palette.
+For an existing Kitty window, use its `Ctrl+Alt+1` through `Ctrl+Alt+8` shortcuts.
 
-Each theme is a directory of per-app fragments under
-`~/.config/arch-hypr-neobrutalist/themes/<name>/`. The configs reference fixed symlinks
-(`~/.config/waybar/theme.css`, `~/.config/hypr/theme.conf`, `~/.config/mako/theme`,
-`~/.config/kitty/theme-current.conf`), and `theme-set.sh` retargets those symlinks and
-reloads Hyprland, Waybar, and Mako.
+Palette fragments live in
+`~/.config/arch-hypr-neobrutalist/themes/<name>/`. The theme helper updates the
+application symlinks, including `~/.config/hypr/theme.lua`, and reloads the
+applications that support it. AGS observes the selected palette.
 
-## Add your own theme
+## Choose a wallpaper
 
-Copy an existing fragment directory and adjust the colors, then select it by name:
+Use the appearance panel or run:
 
 ```bash
-cp -r ~/.config/arch-hypr-neobrutalist/themes/yellow \
-      ~/.config/arch-hypr-neobrutalist/themes/mytheme
-# edit the five files, then:
-~/.config/scripts/theme-set.sh mytheme
+~/.config/scripts/wallpaper-cycle.sh next
+~/.config/scripts/wallpaper-cycle.sh prev
+~/.config/scripts/wallpaper-cycle.sh random
 ```
 
-Custom theme directories are preserved by `make apply` like any other local file.
+Add images to `~/Pictures/wallpapers/`. Both the picker and helper use that
+directory unless `WALLPAPER_DIR` is set in the desktop session environment.
+The helper applies the image through `hyprpaper.service` and saves the selection
+only after the active displays report it.
+
+`Super+W`, `Super+Shift+W`, and `Super+Ctrl+W` invoke the same three actions.

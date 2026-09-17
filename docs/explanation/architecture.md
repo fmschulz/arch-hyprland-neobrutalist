@@ -1,119 +1,83 @@
-# Architecture
+# Desktop architecture
 
-How the pieces fit together: what starts what, where state lives, and why the config is shaped
-the way it is.
+## Hyprland configuration
 
-## One entry file, numbered sections
+`~/.config/hypr/hyprland.lua` loads numbered Lua files from `conf.d/`:
 
-`~/.config/hypr/hyprland.conf` defines shared variables (`$mainMod`, `$terminal`, `$menu`),
-sources the machine-local `monitors.conf`, and then sources seven numbered sections from
-`conf.d/`:
+| Section | Purpose |
+| --- | --- |
+| `00-monitors.lua` | Load the local `monitors.lua` layout |
+| `10-env.lua` | Set toolkit, cursor, and locale variables |
+| `20-autostart.lua` | Start desktop services and handle reloads |
+| `30-look.lua` | Set gaps, borders, animations, and layout |
+| `40-input.lua` | Configure the keyboard, touchpad, and gestures |
+| `50-binds.lua` | Define shortcuts |
+| `60-submaps.lua` | Define move and resize modes |
+| `70-windowrules.lua` | Place dialogs, scratchpads, and picture-in-picture windows |
 
-```text
-10-env.conf          environment variables
-20-autostart.conf    exec-once startup chain
-30-look.conf         borders, gaps, animations, groups
-40-input.conf        keyboard, touchpad, per-device tuning, gestures
-50-binds.conf        all keybinds
-60-submaps.conf      resize submap
-70-windowrules.conf  floating/centering rules for dialogs and popups
-```
+The look section reads `theme.lua`, a symlink maintained by `theme-set.sh`.
+The local monitor file is installed once. Device names and layouts belong there,
+outside the tracked configuration. Legacy `.conf` files use their own
+`monitors.conf` and `theme.conf`.
 
-The numbering is load order, and load order matters: variables come first so every section can
-use them, and submaps come after binds because they reference the same dispatchers. Editing a
-numbered section instead of the entry file keeps machine-portable changes separate from the
-monitor layout, which is the one part that differs per machine.
+## Bar and control panels
 
-## The startup chain
+`ags-shell.sh login` starts Waybar, then starts AGS. It waits for AGS to report
+readiness before stopping Waybar. If the supervised AGS process exits, the helper
+restores Waybar. The supervisor uses a lock and checks the process identity before
+stopping an instance.
 
-`20-autostart.conf` exports the Hyprland session environment to the systemd user manager, then
-starts Waybar through `waybar-restart.sh`. The helper uses `waybar.service` when the session
-environment is available and falls back to an unmanaged process if the unit cannot start. The
-same file starts Mako, hypridle, hyprsunset, the polkit agent (hyprpolkitagent), clipboard watchers
-(`wl-paste` into cliphist, text and images only - the primary selection is deliberately not
-watched so mouse selections do not flood the history), nm-applet, udiskie (the sole automounter),
-the clamshell watcher, the wallpaper daemon via `wallpaper-cycle.sh apply`, and restoration of
-saved workspace names.
+AGS provides workspace buttons, window titles, status modules, a system tray, and
+panels for Wi-Fi, audio, displays, appearance, notifications, and power. Its code
+lives in `~/.config/ags`. The pinned AGS/Astal runtime is separate, under
+`~/.local/share/arch-hypr-neobrutalist/ags`.
 
-## Idle, lock, and sleep
+The bar reads network names, notifications, window titles, and battery values from
+the running session. These values are not shipped in the repository.
+Display changes use a confirmation timer so an unconfirmed preview can restore
+the previous layout.
 
-hypridle owns the idle timeline: at 2.5 minutes the backlight drops to minimum and the keyboard
-backlight turns off (both restore on activity); at 5 minutes the session locks; at 6 minutes the
-display powers off. The lock step runs through `idle-lock.sh`, which skips locking while an
-external monitor is attached - a docked desk is treated as trusted, so displays still sleep but
-wake without a password. Undocked, the full lock applies. Before suspend the session locks, and
-after resume the display is woken explicitly so one keypress is enough. hyprlock keeps a
-15-second grace window in which any key unlocks without a password.
+## Session services
 
-## Screen capture is allowlisted
+Startup imports the display environment into the systemd user manager and starts
+the bar, Mako, the policy agent, clipboard watchers, hypridle, and the display
+helpers. The wallpaper helper starts `hyprpaper.service` and restores the selected
+image. Optional sunset and on-screen-display commands run when installed.
 
-`ecosystem:enforce_permissions = true` makes Hyprland gate screencopy access, and the config
-grants it to exactly the four binaries the desktop uses: `grim`, `grimblast`, `hyprpicker`
-(grimblast's freeze mode), and `wf-recorder`, plus the desktop portal for in-app screen
-sharing. Anything else that tries to read the screen triggers an explicit permission dialog.
-Changing the permission list requires a Hyprland restart, not just a reload.
+Locking goes through `secure-lock.sh`, which clears clipboard state before
+starting hyprlock. Idle actions dim, lock, turn off displays, and suspend on
+battery. The battery check keeps an AC-powered machine awake at the suspend stage.
 
-## Waybar and its scripts speak JSON
-
-Custom Waybar modules exec scripts from `~/.config/scripts/` that print a single JSON object
-(`text`, `tooltip`, `class`). The `class` field drives the CSS state colors (warning, critical,
-pending), which is how the bar changes color without Waybar knowing anything about the
-underlying checks. Two modules also listen for realtime signals so they refresh immediately
-instead of waiting for their poll interval: the workspace overview on `SIGRTMIN+8` (sent by the
-rename flow) and the update count on `SIGRTMIN+9` (sent after a completed upgrade).
-
-## Portals
-
-`portals.conf` routes portal requests by capability: the Hyprland portal serves ScreenCast and
-Screenshot (it is the only one that understands the compositor), and the GTK portal serves
-FileChooser (so file dialogs get a real GTK dialog). `GTK_USE_PORTAL=1` makes GTK apps such as
-Firefox use the portal chooser.
-
-## Where state lives
-
-The config directories are disposable - `make apply` can rewrite them at any time - so anything
-that must survive an apply lives elsewhere:
+## Files and state
 
 | Data | Location |
 | --- | --- |
-| Workspace names | `~/.local/state/hypr/workspace-names.json` |
-| Wallpaper index | `~/.cache/wallpaper-cycle/index` |
-| Weather cache (15 min TTL) | `~/.cache/arch-hypr-neobrutalist-weather.json` |
-| Screenshots / recordings | `~/Documents/screenshots`, `~/Documents/screenrecordings` |
-| Local overrides | `~/.config/arch-hypr-neobrutalist/`, `~/.config/hypr/monitors.conf` |
+| Desktop configuration | `~/.config/hypr`, `ags`, `scripts`, and application directories |
+| Theme fragments | `~/.config/arch-hypr-neobrutalist/themes` |
+| Monitor overrides | `~/.config/hypr/monitors.lua` and legacy `monitors.conf` |
+| Wallpaper collection | `~/Pictures/wallpapers` |
+| Wallpaper selection | `~/.cache/wallpaper-cycle/current` |
+| AGS process state | The session's `XDG_RUNTIME_DIR` |
+| Local preferences | `~/.config/arch-hypr-neobrutalist` |
 
-## Services and system hooks
+Credentials, Bluetooth addresses, weather coordinates, workspace notes, generated
+runtime files, and caches stay on the installed machine.
 
-User units (enabled by `make apply`): the pipewire stack, a weekly `cache-cleanup.timer`,
-`ssh-agent.service` (backing the `SSH_AUTH_SOCK` the shell exports), and
-`bluetooth-autoconnect.service` when a device list exists. System-level (installed by
-`make system` as root): sysctl memory tuning, journald size limits, a weekly `paccache` timer,
-and a udev rule that switches the power profile on AC/battery changes - the rule runs a
-root-owned copy of the script from `/usr/local/lib/arch-hypr-neobrutalist/`, never a file from
-`$HOME`, because udev executes it as root.
+## Apply and system setup
 
-## The apply model
+`scripts/apply.sh` merges the repository's configuration into the user's config
+directories. It preserves untracked local files and excludes AGS dependencies and
+build output. Local monitor templates are copied only when the corresponding
+file does not exist. Theme links are initialized without replacing an existing
+selection.
 
-`scripts/apply.sh` merges rather than mirrors: it rsyncs tracked configs over the installed
-ones but never deletes files it does not know about, and the machine-local files are installed
-only when missing. The result is that `make apply` is always safe to run - it converges the
-tracked parts and leaves local state alone. `make doctor` is the companion check that the
-wiring (commands, files, hooks) is actually in place.
+One-time migrations track completion in
+`~/.local/state/arch-hypr-neobrutalist/migrations-applied`. Failed migrations remain
+pending. `make update` pulls, installs required packages and the runtime, applies
+configuration, and runs doctor. Existing legacy monitor layouts stay active until
+their local configuration is converted to Lua.
 
-Deletions and system-level cleanup are what rsync cannot express, so those live in
-`migrations/`: one-shot shell scripts that apply runs exactly once per machine, recording
-applied names in `~/.local/state/arch-hypr-neobrutalist/migrations-applied`. A migration
-that fails (for example, one that needs sudo in a non-interactive run) stays pending and
-retries on the next apply. `make update` chains the whole convergence: pull, apply with
-migrations, doctor.
-
-## Theming is symlink indirection
-
-Every themed surface reads its colors through a fixed path that is really a symlink into
-`~/.config/arch-hypr-neobrutalist/themes/<name>/`: Waybar and Wofi `@import "theme.css"`
-(GTK named colors), Hyprland and hyprlock `source` a fragment defining `$themeAccent`,
-`$themeAccentText`, and `$themeBorder`, Mako `include`s a color fragment, and Kitty
-`include`s a palette file. `theme-set.sh` retargets the five symlinks and reloads Hyprland,
-Waybar (`SIGUSR2` re-reads CSS), and Mako - an atomic switch with no file rewriting. The
-semantic colors (pink for urgent, mint for healthy, purple for submaps) stay constant
-across themes; only the identity accent rotates.
+Root-level setup is separate from the user configuration. Power-profile rules run
+a root-owned helper under `/usr/local/lib/arch-hypr-neobrutalist`. The optional
+greetd setup installs the login theme and launcher. It does not record the full
+session environment in logs.

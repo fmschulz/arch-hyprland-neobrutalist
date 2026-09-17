@@ -15,7 +15,12 @@ sync_dir() {
   local src="$1"
   local dest="$2"
   mkdir -p "$dest"
-  rsync -a "$src/" "$dest/"
+  rsync -a \
+    --exclude '.gitignore' \
+    --exclude '.types/' \
+    --exclude 'dist/' \
+    --exclude 'node_modules/' \
+    "$src/" "$dest/"
 }
 
 log "Syncing desktop configs"
@@ -30,7 +35,13 @@ mkdir -p \
 
 # hypridle has no entry here: its config is tracked as configs/hypr/hypridle.conf
 # because hypridle only reads ~/.config/hypr/hypridle.conf.
-SYNC_DIRS=(bash btop hypr kitty mako nvim scripts waybar wofi xdg-desktop-portal yazi)
+SYNC_DIRS=(ags bash btop hypr kitty mako nvim scripts waybar wofi xdg-desktop-portal yazi)
+KEEP_LEGACY_HYPRLAND=false
+if [[ -f "$HOME/.config/hypr/monitors.conf" \
+  && ! -f "$HOME/.config/hypr/monitors.lua" \
+  && ! -f "$HOME/.config/hypr/hyprland.lua" ]]; then
+  KEEP_LEGACY_HYPRLAND=true
+fi
 
 # On machines deployed via ~/controlcenter these ~/.config paths are symlinks
 # into that repo; rsync would write straight through them and overwrite its
@@ -48,7 +59,18 @@ if [[ -z "${ARCH_APPLY_OVERRIDE:-}" ]]; then
 fi
 
 for name in "${SYNC_DIRS[@]}"; do
-  sync_dir "$ROOT/configs/$name" "$HOME/.config/$name"
+  if [[ "$name" == hypr ]] && $KEEP_LEGACY_HYPRLAND; then
+    mkdir -p "$HOME/.config/hypr"
+    rsync -a \
+      --exclude '.gitignore' \
+      --exclude '.types/' \
+      --exclude 'dist/' \
+      --exclude 'hyprland.lua' \
+      --exclude 'node_modules/' \
+      "$ROOT/configs/hypr/" "$HOME/.config/hypr/"
+  else
+    sync_dir "$ROOT/configs/$name" "$HOME/.config/$name"
+  fi
 done
 
 sync_dir "$ROOT/configs/arch-hypr-neobrutalist" "$HOME/.config/arch-hypr-neobrutalist"
@@ -79,6 +101,18 @@ if [[ -f "$ROOT/configs/hypr/monitors.conf.example" ]] && [[ ! -f "$HOME/.config
   ok "Installed default monitor profile"
 fi
 
+if ! $KEEP_LEGACY_HYPRLAND \
+  && [[ -f "$ROOT/configs/hypr/monitors.lua.example" ]] \
+  && [[ ! -f "$HOME/.config/hypr/monitors.lua" ]]; then
+  install -m 644 \
+    "$ROOT/configs/hypr/monitors.lua.example" \
+    "$HOME/.config/hypr/monitors.lua"
+  ok "Installed default Lua monitor profile"
+fi
+if $KEEP_LEGACY_HYPRLAND; then
+  ok "Preserved legacy monitor config; create ~/.config/hypr/monitors.lua with equivalent rules, then rerun make apply"
+fi
+
 chmod +x "$HOME/.config/scripts/"* 2>/dev/null || true
 
 # One-shot migrations: each runs once per machine (state survives applies),
@@ -98,18 +132,21 @@ for migration in "$ROOT"/migrations/*.sh; do
   fi
 done
 
-# Default theme: create the per-app theme symlinks once; theme-set.sh
-# switches them afterwards (Super+Ctrl+T cycles).
-if [[ ! -e "$HOME/.config/waybar/theme.css" ]]; then
-  "$HOME/.config/scripts/theme-set.sh" yellow
-  ok "Default theme set (yellow)"
+# Create any missing per-app theme links. On upgrades, derive the palette from
+# the existing Waybar link so adding theme.lua does not reset the user's choice.
+if [[ ! -e "$HOME/.config/waybar/theme.css" || ! -e "$HOME/.config/hypr/theme.lua" ]]; then
+  current_theme=$("$HOME/.config/scripts/theme-set.sh" current)
+  "$HOME/.config/scripts/theme-set.sh" "$current_theme"
+  ok "Theme links set ($current_theme)"
 fi
 
 if [[ -f "$HOME/.config/bash/bashrc" ]]; then
   if ! grep -Fq '.config/bash/bashrc' "$HOME/.bashrc" 2>/dev/null; then
     {
       printf '\n# Source arch-hypr-neobrutalist bashrc\n'
-      printf 'if [ -f "$HOME/.config/bash/bashrc" ]; then source "$HOME/.config/bash/bashrc"; fi\n'
+      cat <<'BASHRC'
+if [ -f "$HOME/.config/bash/bashrc" ]; then source "$HOME/.config/bash/bashrc"; fi
+BASHRC
     } >>"$HOME/.bashrc"
     ok "Added ~/.config/bash/bashrc to ~/.bashrc"
   fi

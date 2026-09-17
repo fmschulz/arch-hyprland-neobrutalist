@@ -1,13 +1,13 @@
 # Install the desktop
 
-In this tutorial you install the complete desktop on a fresh Arch system and take your first
-steps inside it. By the end you have Hyprland running with the neo-brutalist Waybar, launcher,
-terminal, and lock screen, and you know the three keybinds that unlock everything else.
+This tutorial installs the neo-brutalist Hyprland desktop and starts its AGS bar,
+launcher, terminal, and lock screen.
 
-You need a working Arch Linux install (a minimal `archinstall` run is fine), a normal user with
-`sudo` access, and a network connection. Everything below runs as that user.
+Use an up-to-date x86-64 Arch Linux system, a normal user with `sudo` access, and a
+network connection. The configuration is checked with Hyprland 0.56.2 and AGS 3.1.2.
+Run the commands as your normal user.
 
-## 1. Clone the repo
+## 1. Clone the repository
 
 ```bash
 sudo pacman -S --needed git make
@@ -15,70 +15,59 @@ git clone https://github.com/fmschulz/arch-hyprland-neobrutalist.git
 cd arch-hyprland-neobrutalist
 ```
 
-## 2. Run the installer
+## 2. Install
 
 ```bash
 make install
 ```
 
-This takes a few minutes. Watch for the `sudo` password prompt near the start. The installer:
+The installer installs the listed packages, prepares the pinned user-local AGS
+runtime, enables the base services, copies desktop configuration, and applies
+system tuning. The runtime build downloads verified archives and requires a
+working compiler toolchain. Watch for the `sudo` prompt and any failed step.
 
-1. installs the packages in `packages/pacman.txt` (plus `packages/pacman-amd.txt` when an
-   AMD GPU is detected),
-2. bootstraps the `paru` AUR helper and installs `packages/aur.txt`,
-3. enables NetworkManager and Bluetooth,
-4. syncs all configs into `~/.config` and installs copy-once local override files,
-5. applies system tuning (sysctl, journal limits, pacman cache timer, power-profile
-   switching).
+For the themed login manager, use `make full-install` or follow the
+[greetd guide](../how-to/set-up-greetd.md) after testing the desktop.
 
-## 3. Verify the install
+## 3. Verify
 
 ```bash
 make doctor
 ```
 
-Every line should print a check mark. The output ends with:
+A successful check ends with:
 
 ```text
 All checks passed.
 ```
 
-If a command or file is flagged instead, rerun `make install` and check its output for a
-failed step.
+If doctor reports a missing file, command, or runtime, check the installation
+output before logging in.
 
-## 4. Start Hyprland
+## 4. Start the session
 
-Log in on a TTY and run:
+From a TTY, run:
 
 ```bash
 Hyprland
 ```
 
-The desktop appears: yellow Waybar on top, the wallpaper behind it, and a workspace indicator
-on the left. (For a graphical login screen instead of the TTY, set up
-[greetd/regreet](../how-to/set-up-greetd.md) afterwards.)
+Hyprland loads `~/.config/hypr/hyprland.lua`. Waybar appears while AGS starts; the
+AGS bar takes over when ready. If AGS cannot start, Waybar remains available.
+The generic monitor defaults use preferred display modes. Adjust your
+[local monitor layout](../how-to/configure-monitors.md) if needed.
 
-## 5. Take your first steps
+## 5. Try the controls
 
-Press these three binds - they are the core loop of the desktop (`Super` is the key with the
-logo on it):
+1. Press `Super+Return` to open Kitty.
+2. Press `Super+D` to open Wofi. Type an application name; `Esc` closes it.
+3. Press `Super+/` to open the shortcut reference.
+4. Click the bar's network or audio module to open its controls.
+5. Press `Super+2` to select workspace 2 and `Super+Tab` to return.
+6. Press `Super+Ctrl+T` to change the accent palette.
 
-1. `Super+Return` opens a Kitty terminal. Notice the welcome banner with system info.
-2. `Super+D` opens the Wofi application launcher. Type a few letters, `Esc` closes it.
-3. `Super+/` opens the searchable keybinding cheatsheet. Every bind in the desktop is listed
-   here - this is the page to remember.
+`Super+L` locks the session. Unlock with your account password. `Super+Alt+P`
+opens the power menu; `Super+M` exits the session directly.
 
-Now try a workspace: press `Super+2` to switch, `Super+Return` to open a terminal there, and
-`Super+Tab` to jump back and forth between your two workspaces. Press `Super+W` to cycle the
-wallpaper, `Super+Ctrl+T` to cycle the accent theme, and `Super+L` to see the lock screen
-(your password unlocks it).
-
-You have a working desktop.
-
-## Next steps
-
-- Multiple displays or a docking station: [configure monitors](../how-to/configure-monitors.md).
-- Weather banner and Bluetooth auto-connect:
-  [set machine-local overrides](../how-to/local-overrides.md).
-- A themed login screen: [set up greetd](../how-to/set-up-greetd.md).
-- The full keybind list: [keybinds reference](../reference/keybinds.md).
+For weather preferences and Bluetooth devices, see
+[local overrides](../how-to/local-overrides.md). These settings stay on your machine.

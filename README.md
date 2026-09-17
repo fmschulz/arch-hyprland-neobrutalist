@@ -1,98 +1,78 @@
 # arch-hyprland-neobrutalist
 
-`v0.1.0` public baseline for a reproducible Arch Linux Hyprland setup with a neo-brutalist visual system.
+An Arch Linux desktop with the Framework 12 neo-brutalist style: square
+corners, black borders, eight accent palettes, and monospace typography.
 
-This repo contains all the dotfiles necessary to set up the neo-brutalist Hyprland desktop: tracked configs, package manifests, install/apply scripts, screenshots space, and a small docs layer that explains the design choices instead of leaving them implicit.
+The desktop uses Hyprland's Lua configuration and an AGS 3 bar with controls for
+Wi-Fi, audio, displays, appearance, notifications, and power. Waybar stays available
+as a fallback. Wofi, Mako, Kitty, hyprlock, and greetd/regreet share the visual style.
+Wallpaper selection uses hyprpaper.
 
-![arch-hyprland-neobrutalist v0.1.0 desktop showcase](assets/screenshots/v0.1.0-desktop.png)
+## Install
 
-## Included Components
-
-- Hyprland desktop stack: `hyprland`, `hyprlock`, `hypridle`, `hyprsunset`, Waybar, Mako, Wofi
-- Modular Hyprland config: `hyprland.conf` sources `conf.d/10-env … 70-windowrules`
-- Neo-brutalist Waybar: Nerd Font iconography, white module fields with accent-colored
-  state, submap/mode indicator, and a clock that opens a calendar popup
-- Shell and terminal workflow: Bash, Kitty, Yazi, Neovim, fzf/zoxide/atuin/starship
-- Login and lock experience: themed `greetd` + `regreet`, lock screen, wallpapers
-- Desktop behavior: workspace rename flow, monitor helpers, power/network/USB scripts,
-  screenshots (`grimblast`) and area screen recording (`wf-recorder`), and a `Super+/` cheatsheet
-- Music: `Super+Shift+M` opens [bester-ytm](https://github.com/fmschulz/bester-ytm), a YouTube Music TUI installed as a `uv` tool by `make apply`
-
-## Quick Start
-
-Start from a working Arch install with a normal user that has `sudo` access:
+Use an up-to-date x86-64 Arch Linux installation, a normal user with `sudo` access,
+and a network connection. The configuration is checked with Hyprland 0.56.2 and
+AGS 3.1.2.
 
 ```bash
 sudo pacman -S --needed git make
-git clone https://github.com/<owner>/arch-hyprland-neobrutalist.git
+git clone https://github.com/fmschulz/arch-hyprland-neobrutalist.git
 cd arch-hyprland-neobrutalist
 make install
-```
-
-If you also want the themed `greetd` / `regreet` login manager:
-
-```bash
-make full-install
-```
-
-## Targets
-
-```bash
-make install
-make full-install
-make packages
-make apply
 make doctor
-make system
-make greetd
 ```
 
-## Reproducibility Rules
+For the optional themed login manager, run `make greetd` after the desktop works,
+or use `make full-install` during installation.
 
-- Repo-managed files are merged into `~/.config`; local state is preserved on `make apply`.
-- The Hyprland config is modular. Edit a numbered section in
-  `~/.config/hypr/conf.d/` rather than the `hyprland.conf` entry file.
-- Monitor layout is intentionally local.
-  Edit `~/.config/hypr/monitors.conf` (installed once from the tracked `.example`)
-  instead of the tracked config; it is preserved across every `make apply`.
-- Stateful or private data is intentionally excluded from git.
-  This includes Bluetooth MAC addresses, workspace rename state, shell-local overrides, and any personal station additions.
-- Yazi plugins and flavors are restored with `ya pkg install` during `make apply`.
+The pinned AGS runtime is built in your user account. Its source archives and
+package downloads are verified before use. No built runtime or installed
+JavaScript dependencies are stored in this repository.
 
-## Docs
+## Desktop controls
 
-Full documentation - install tutorial, how-to guides, reference, and design explanation -
-lives at <https://fmschulz.github.io/arch-hyprland-neobrutalist/>. It is built from `docs/`
-with MkDocs (Material) and deployed by the `docs` workflow on push to `main`.
+- `Super+Return`: terminal. `Super+D`: application launcher.
+- `Super+/`: keybinding reference.
+- `Super+Ctrl+I`: Wi-Fi controls. Click the bar modules for the other panels.
+- `Super+Ctrl+T`: cycle the accent palette.
+- `Super+W`: next wallpaper.
+- `Super+Shift+Up`: workspace overview.
+- `Super+L`: lock. `Super+Alt+P`: power menu.
 
-Preview locally:
+See the [keybind reference](docs/reference/keybinds.md) for window movement,
+workspaces, screenshots, and recording.
+
+## Local configuration and privacy
+
+`make apply` merges tracked files into `~/.config` and preserves local files.
+Configure your displays in `~/.config/hypr/monitors.lua`; the installer creates it
+once on new installations. Upgrades with an existing legacy monitor layout keep
+using `monitors.conf` until you [convert it to Lua](docs/how-to/configure-monitors.md#legacy-configuration).
+
+The repository contains reusable configuration and code. It excludes account
+credentials, wireless profiles, Bluetooth device addresses, monitor serials,
+workspace notes, browser profiles, clipboard history, and runtime logs. Weather
+coordinates and Bluetooth preferences belong in local files created from the examples.
+
+The installer refuses to overwrite configuration directories managed by a
+controlcenter checkout. Use that checkout's deployer on such machines.
+
+## Documentation
+
+[Read the documentation](https://fmschulz.github.io/arch-hyprland-neobrutalist/)
+for installation, local overrides, themes, and the desktop architecture.
 
 ```bash
 uvx --with mkdocs-material mkdocs serve
 ```
 
-Quick links into the tree:
+| Directory | Contents |
+| --- | --- |
+| `configs/` | Desktop, AGS, terminal, shell, and application sources |
+| `scripts/` | Installation, apply, doctor, and optional system setup |
+| `packages/` | Pacman and AUR package manifests |
+| `docs/` | MkDocs documentation |
+| `wallpapers/` | Public wallpaper assets |
 
-- `docs/tutorials/getting-started.md` - install walkthrough
-- `docs/reference/keybinds.md` - core desktop shortcuts
-- `docs/explanation/design.md` - palette, typography, and local override boundaries
-- `assets/screenshots/README.md` - checklist for the visual showcase captures
-
-## Repo Layout
-
-```text
-configs/     Desktop, shell, and app configs copied into ~/.config
-docs/        MkDocs documentation site (tutorials, how-to, reference, explanation)
-packages/    Pacman and AUR package manifests
-scripts/     Bootstrap, apply, doctor, and system setup scripts
-wallpapers/  Neo-brutalist wallpaper set used by the desktop and lock screen
-```
-
-## Local Overrides
-
-These files are meant to stay machine-local:
-
-- `~/.config/arch-hypr-neobrutalist/bluetooth-devices.conf`
-- `~/.config/arch-hypr-neobrutalist/welcome.conf` (weather location for the welcome banner)
-- `~/.config/hypr/monitors.conf`
-- `~/.bashrc.local`
+The screenshot under `assets/screenshots/` records the earlier v0.1.0 Waybar
+layout. It does not show the current AGS bar.
