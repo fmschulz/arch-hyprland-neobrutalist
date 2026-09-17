@@ -35,6 +35,7 @@ export type WifiConnectResult = {
 export type WifiConnectionMode = "automatic" | "existing" | "new" | "retry"
 
 export interface NetworkController {
+  available: boolean
   summary: Accessor<string>
   enabled: Accessor<boolean>
   scanning: Accessor<boolean>
@@ -230,14 +231,12 @@ function retryConnection(saved: NM.RemoteConnection, password: string): NM.Conne
 
 export function createNetwork(): NetworkController {
   const service = AstalNetwork.get_default()
-  const detectedWifi = service.get_wifi()
-  if (!detectedWifi) throw new Error("No Wi-Fi device is available")
-  const wifi: AstalNetwork.Wifi = detectedWifi
-
+  const wifi = service.get_wifi()
+  const device = wifi?.get_device() ?? null
+  const available = wifi !== null && device !== null
   const client = service.get_client()
-  const device = wifi.get_device()
-  const [summary, setSummary] = createState("Wi-Fi")
-  const [enabled, setEnabled] = createState(wifi.get_enabled())
+  const [summary, setSummary] = createState(available ? "Wi-Fi" : "Wi-Fi unavailable")
+  const [enabled, setEnabled] = createState(wifi?.get_enabled() ?? false)
   const [scanning, setScanning] = createState(false)
   const [busy, setBusy] = createState(false)
   const [status, setStatus] = createState("")
@@ -250,6 +249,7 @@ export function createNetwork(): NetworkController {
   let disposed = false
 
   function matchingConnections(ap: NM.AccessPoint): NM.RemoteConnection[] {
+    if (!device) return []
     const owe = securityFor(ap) === "owe"
     return client.get_connections().filter(connection =>
       device.connection_valid(connection)
@@ -259,6 +259,7 @@ export function createNetwork(): NetworkController {
   }
 
   function refreshAccessPoints() {
+    if (!wifi || !device) return
     const sources = wifi.get_access_points() as AstalNetwork.AccessPoint[]
     const active = wifi.get_active_access_point()
     const strongest = new Map<string, WifiAccessPoint>()
@@ -293,6 +294,11 @@ export function createNetwork(): NetworkController {
   }
 
   function refreshSummary() {
+    if (!wifi || !device) {
+      setEnabled(false)
+      setSummary("Wi-Fi unavailable")
+      return
+    }
     const isEnabled = wifi.get_enabled()
     setEnabled(isEnabled)
     const name = wifi.get_ssid()
@@ -350,7 +356,7 @@ export function createNetwork(): NetworkController {
   }
 
   async function scan() {
-    if (disposed || !enabled() || scanning() || busy()) return
+    if (!device || disposed || !enabled() || scanning() || busy()) return
     setScanning(true)
     setStatus("Scanning for networks…")
     const cancellable = operationCancellable()
@@ -388,7 +394,7 @@ export function createNetwork(): NetworkController {
   }
 
   async function setWifiEnabled(value: boolean) {
-    if (busy() || value === enabled()) return
+    if (!wifi || !device || busy() || value === enabled()) return
     setBusy(true)
     setStatus("")
     try {
@@ -402,7 +408,7 @@ export function createNetwork(): NetworkController {
   }
 
   async function connect(ap: WifiAccessPoint, password?: string): Promise<WifiConnectResult> {
-    if (busy()) return { connected: false, needsPassword: false }
+    if (!wifi || !device || busy()) return { connected: false, needsPassword: false }
     if (ap.active) {
       setStatus(`Already connected to ${ap.name}.`)
       return { connected: true, needsPassword: false }
@@ -521,14 +527,16 @@ export function createNetwork(): NetworkController {
     signalIds.length = 0
   }
 
-  watch(wifi, "access-point-added", refreshAccessPoints)
-  watch(wifi, "access-point-removed", refreshAccessPoints)
-  watch(wifi, "notify::active-access-point", refreshNetworkState)
-  watch(wifi, "notify::enabled", refreshNetworkState)
-  watch(wifi, "notify::internet", refreshSummary)
-  watch(wifi, "notify::ssid", refreshSummary)
-  watch(wifi, "notify::strength", refreshSummary)
+  if (wifi && device) {
+    watch(wifi, "access-point-added", refreshAccessPoints)
+    watch(wifi, "access-point-removed", refreshAccessPoints)
+    watch(wifi, "notify::active-access-point", refreshNetworkState)
+    watch(wifi, "notify::enabled", refreshNetworkState)
+    watch(wifi, "notify::internet", refreshSummary)
+    watch(wifi, "notify::ssid", refreshSummary)
+    watch(wifi, "notify::strength", refreshSummary)
+  }
   refreshNetworkState()
 
-  return { summary, enabled, scanning, busy, status, accessPoints, scan, setWifiEnabled, connect, clear, onClear, dispose }
+  return { available, summary, enabled, scanning, busy, status, accessPoints, scan, setWifiEnabled, connect, clear, onClear, dispose }
 }

@@ -161,8 +161,22 @@ async function testRealBackend(): Promise<number> {
     assert(points.every(point => /^(open|owe|personal-psk|personal-sae|enterprise|unsupported):[0-9a-f]+$/.test(point.id)),
       "The live NetworkManager snapshot contains a BSSID-based identity")
     const wifi = AstalNetwork.get_default().get_wifi()
-    if (!wifi) throw new Error("The live NetworkManager backend has no Wi-Fi device")
-    const device = wifi.get_device()
+    const device = wifi?.get_device() ?? null
+    if (!wifi || !device) {
+      assert(!LIVE_SCAN, "The opt-in Wi-Fi scan requires an available adapter")
+      assert(!network.available, "The controller reports an unavailable Wi-Fi adapter as available")
+      assert(network.summary() === "Wi-Fi unavailable", "The unavailable Wi-Fi summary is incorrect")
+      assert(!network.enabled() && !network.scanning() && !network.busy(), "The unavailable Wi-Fi controller has active state")
+      assert(network.status() === "" && points.length === 0, "The unavailable Wi-Fi controller exposes status or access points")
+      await network.scan()
+      await network.setWifiEnabled(true)
+      const result = await network.connect(point("open"))
+      assert(!result.connected && !result.needsPassword, "The unavailable Wi-Fi controller accepted a connection")
+      assert(!network.enabled() && !network.scanning() && !network.busy() && network.status() === "" && network.accessPoints().length === 0,
+        "An unavailable Wi-Fi operation changed controller state")
+      return 0
+    }
+    assert(network.available, "The controller reports an available Wi-Fi adapter as unavailable")
     let checkedOweProfiles = 0
     for (const raw of device.get_access_points()) {
       if (securityFor(raw) !== "owe" || !raw.get_ssid()) continue

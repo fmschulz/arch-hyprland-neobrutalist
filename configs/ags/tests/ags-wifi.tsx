@@ -79,7 +79,7 @@ function descendants(root: Gtk.Widget): Gtk.Widget[] {
   return found
 }
 
-function fakeNetwork() {
+function fakeNetwork(available = true) {
   const point: WifiAccessPoint = {
     id: "personal-psk:74657374",
     name: "Test network",
@@ -90,20 +90,21 @@ function fakeNetwork() {
     security: "personal",
   }
   const [summary] = createState("Wi-Fi")
-  const [enabled, setEnabled] = createState(true)
+  const [enabled, setEnabled] = createState(available)
   const [scanning, setScanning] = createState(false)
   const [busy] = createState(false)
   const [status, setStatus] = createState("")
-  const [accessPoints, setAccessPoints] = createState([
+  const [accessPoints, setAccessPoints] = createState(available ? [
     point,
     { ...point, id: "personal-psk:6f74686572", name: "Other test network with a deliberately long name", strength: 60 },
     { ...point, id: "owe:616972706f7274", name: "Airport test network", security: "owe" as const },
-  ])
+  ] : [])
   const clearCallbacks = new Set<() => void>()
   const attempts: Array<string | undefined> = []
   const toggles: boolean[] = []
 
   const network: NetworkController = {
+    available,
     summary,
     enabled,
     scanning,
@@ -158,8 +159,28 @@ function fakeNetwork() {
   }
 }
 
+async function testUnavailablePanel(window: Gtk.Window) {
+  window.present()
+  await waitForWindowActive(window)
+  const widgets = descendants(window)
+  const toggle = widgets.find(widget => widget instanceof Gtk.Switch) as Gtk.Switch | undefined
+  const search = widgets.find(widget => widget instanceof Gtk.SearchEntry) as Gtk.SearchEntry | undefined
+  const spinner = widgets.find(widget => widget instanceof Gtk.Spinner) as Gtk.Spinner | undefined
+  const refreshButton = spinner?.get_parent()?.get_parent()
+  const labels = widgets.filter(widget => widget instanceof Gtk.Label) as Gtk.Label[]
+  assert(toggle !== undefined && !toggle.get_sensitive(), "The unavailable Wi-Fi switch is enabled")
+  assert(refreshButton instanceof Gtk.Button && !refreshButton.get_sensitive(), "The unavailable Wi-Fi refresh button is enabled")
+  assert(search !== undefined && !search.get_visible(), "The unavailable Wi-Fi search is visible")
+  assert(labels.filter(label => label.get_label() === "Wi-Fi unavailable.").length === 1,
+    "The unavailable Wi-Fi hint is missing or duplicated")
+  assert(!labels.some(label => label.get_label() === "Wi-Fi is off." && label.get_visible()),
+    "The unavailable adapter is presented as switched off")
+  window.close()
+}
+
 async function run(
   window: Gtk.Window,
+  unavailableWindow: Gtk.Window,
   harness: ReturnType<typeof fakeNetwork>,
 ) {
   const { network, attempts, toggles } = harness
@@ -289,6 +310,8 @@ async function run(
   print("ags-wifi: PASS (Enhanced Open label, passwordless click, previous password cleared)")
   print(keyboardMode === "gtk" ? "ags-wifi: PASS (controlled entry; keyboard injection not tested)" : "ags-wifi: PASS (keyboard injection)")
   window.close()
+  await testUnavailablePanel(unavailableWindow)
+  print("ags-wifi: PASS (unavailable adapter disables controls and shows one hint)")
   app.quit()
 }
 
@@ -296,8 +319,12 @@ app.start({
   instanceName: "ags-wifi-test",
   main() {
     const harness = fakeNetwork()
+    const unavailableHarness = fakeNetwork(false)
     const window = <Gtk.Window application={app} visible title="AGS Wi-Fi test"><WifiPanel network={harness.network}/></Gtk.Window>
-    void run(window as Gtk.Window, harness).catch(error => {
+    const unavailableWindow = <Gtk.Window application={app} title="AGS unavailable Wi-Fi test">
+      <WifiPanel network={unavailableHarness.network}/>
+    </Gtk.Window>
+    void run(window as Gtk.Window, unavailableWindow as Gtk.Window, harness).catch(error => {
       printerr(`ags-wifi: FAIL: ${error instanceof Error ? error.message : String(error)}`)
       app.quit(1)
     })

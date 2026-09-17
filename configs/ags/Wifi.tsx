@@ -20,8 +20,8 @@ export function WifiPanel({ network }: { network: NetworkController }) {
   const [selected, setSelected] = createState<WifiAccessPoint | null>(null)
   const [passwordVisible, setPasswordVisible] = createState(false)
   const [query, setQuery] = createState("")
-  const controlsEnabled = createComputed(() => !network.busy() && !network.scanning())
-  const scanEnabled = createComputed(() => network.enabled() && controlsEnabled())
+  const controlsEnabled = createComputed(() => network.available && !network.busy() && !network.scanning())
+  const scanEnabled = createComputed(() => network.available && network.enabled() && controlsEnabled())
   const filteredAccessPoints = createComputed(() => {
     const needle = query().trim().toLocaleLowerCase()
     return needle ? network.accessPoints().filter(ap => ap.name.toLocaleLowerCase().includes(needle)) : network.accessPoints()
@@ -113,7 +113,7 @@ export function WifiPanel({ network }: { network: NetworkController }) {
 
     <Gtk.SearchEntry
       $={entry => { searchEntry = entry }}
-      visible={network.enabled}
+      visible={network.enabled(value => network.available && value)}
       placeholderText="Search networks"
       onSearchChanged={entry => setQuery(entry.get_text())}/>
 
@@ -147,8 +147,9 @@ export function WifiPanel({ network }: { network: NetworkController }) {
       xalign={0}
       cssClasses={["feedback"]}/>
 
-    <label visible={network.enabled(value => !value)} label="Wi-Fi is off." xalign={0} cssClasses={["hint"]}/>
-    <box visible={network.enabled} orientation={Gtk.Orientation.VERTICAL} spacing={4}>
+    <label visible={!network.available} label="Wi-Fi unavailable." xalign={0} cssClasses={["hint"]}/>
+    <label visible={network.enabled(value => network.available && !value)} label="Wi-Fi is off." xalign={0} cssClasses={["hint"]}/>
+    <box visible={network.enabled(value => network.available && value)} orientation={Gtk.Orientation.VERTICAL} spacing={4}>
       <label
         visible={filteredAccessPoints(points => points.length === 0)}
         label={query(value => value ? "No matching networks." : "No networks found.")}
